@@ -9,6 +9,7 @@
 #include "D3DApp.h"
 #include "vertex_shader.h",
 #include "pixel_shader.h".
+#include "base.h"
 #include "maze.h"
 
 using DirectX::XMFLOAT4X4;
@@ -83,8 +84,6 @@ namespace {
 	ComPtr<ID3D12Resource> depthBuffer;
 	HeapType depthBufferHeap;
 
-	constexpr size_t VERTEX_SIZE = sizeof(vertex_t) / sizeof(FLOAT);
-
 	constexpr size_t NUM_TRIANGLES = 3 * (2 * 4 + 6 * 2);
 	constexpr size_t VERTEX_COUNT = NUM_TRIANGLES * 3;
 
@@ -94,10 +93,8 @@ namespace {
 
 
 	constinit size_t const NUM_INSTANCES = 1;
-	XMFLOAT4X4 instance_matrices[NUM_INSTANCES];// = {
-		// XMMatrixTranslation(-1, -1, -1),
-		// XMMatrixTranslation(1, 1, 1)
-	// };
+	XMFLOAT4X4 instance_matrices[NUM_INSTANCES];
+	
 	constinit const size_t INSTANCE_BUFFER_SIZE = sizeof(instance_matrices);
 
 	ComPtr<ID3D12Resource> instance_buffer = nullptr;
@@ -686,11 +683,6 @@ void PopulateCommandList(HWND hwnd) {
 	);
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	// commandList->DrawInstanced(VERTEX_COUNT, 1, 0, 0);
-	// commandList->IASetPrimitiveTopology(
-	// 	D3D_PRIMITIVE_TOPOLOGY_LINESTRIP
-	// );
 
 	commandList->IASetVertexBuffers(
   		0, 1, &vertexBufferView // widok buf. wierzch. ze źdźbłem
