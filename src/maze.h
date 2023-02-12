@@ -47,5 +47,4 @@ struct Maze {
 
 
 constexpr Triangle makeSingleTriangle(SimpleVertex p1, SimpleVertex p2, SimpleVertex p3);
-Maze getMaze(float length, float width, float height, int side_points);
-
+Maze getMaze(float length, float width, float height, int side_edges, int seed = 14369);
