@@ -3,19 +3,6 @@
 
 # define PI          3.14159265358979323846 
 
-struct SimpleColor {
-	float r, g, b;
-};
-
-struct SimpleVertex {
-	float x;
-	float y;
-	float z;
-};
-
-struct Triangle {
-	vertex_t t1[3];
-};
 
 SimpleColor color = {1.0f, 1.0f, 1.0f};
 
