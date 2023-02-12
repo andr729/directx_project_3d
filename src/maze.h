@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 
-#include <d3d12.h> // FLOAT xd
 
 struct vertex_t {
 	float position[3];
@@ -12,21 +11,6 @@ struct vertex_t {
 struct Vector2 {
 	float x;
 	float y;
-};
-
-struct SimpleColor {
-	FLOAT r, g, b;
-};
-
-struct SimpleVertex {
-	FLOAT x;
-	FLOAT y;
-	FLOAT z;
-	SimpleColor color;
-};
-
-struct Triangle {
-	vertex_t t1[3];
 };
 
 struct CuboidTransformation {
@@ -45,6 +29,4 @@ struct Maze {
 	std::vector<HexPrismTransformation> transformations_hexprism;
 };
 
-
-constexpr Triangle makeSingleTriangle(SimpleVertex p1, SimpleVertex p2, SimpleVertex p3);
 Maze getMaze(float length, float width, float height, int side_edges, int seed = 14369);

@@ -93,49 +93,6 @@ namespace {
 	constexpr size_t VERTEX_BUFFER_SIZE = sizeof(triangle_data);
 }
 
-constexpr std::pair<Triangle, Triangle> makeTriangle(SimpleVertex p1, SimpleVertex p2, SimpleVertex p3) {
-	return {makeSingleTriangle(p1, p2, p3), makeSingleTriangle(p3, p2, p1)};
-}
-
-void initTriangleData(size_t triangle_number, Triangle data) {
-	size_t idx = triangle_number*3;
-	triangle_data[idx + 0] = data.t1[0];
-	triangle_data[idx + 1] = data.t1[1];
-	triangle_data[idx + 2] = data.t1[2];
-}
-
-void initTriangleData() {
-	constexpr static SimpleColor green = {0.2f, 1.0f, 0.2f};
-	constexpr static SimpleColor white = {1.0f, 1.0f, 1.0f};
-
-	constexpr static size_t segment_count = 3;
-	constexpr static FLOAT segments_size[segment_count] = {1.2f, .8f, .5f};
-
-	size_t tr_ind = 0;
-
-	FLOAT base_y = -1.f;
-	FLOAT y_scale = 1;
-	FLOAT x_scale = 0.5;
-
-	for (size_t l = 0; l < segment_count; l++) {
-		FLOAT dx = x_scale * segments_size[l];
-		FLOAT dy = y_scale * segments_size[l];
-		for (size_t i = 0; i < 10; i++) {
-
-			auto t =  makeTriangle(
-				{0, base_y, 0, green},
-				{0, base_y+dy, .0, white},
-				{std::sinf(2 * 3.14f * i / 10)*dx, base_y, std::cosf(2 * 3.14f * i / 10)*dx, green} 
-			);
-			initTriangleData(tr_ind++, t.first);
-			initTriangleData(tr_ind++, t.second);
-			
-		}
-		base_y  += dy;
-	}
-	
-}
-
 void copyConstBufferToGpu() {
 	memcpy(
 		vsConstBufferPointer,
@@ -658,7 +615,6 @@ void WaitForPreviousFrame(HWND hwnd) {
 
 void InitDirect3D(HWND hwnd) {
 	
-	initTriangleData();
 	if (GetClientRect(hwnd, &rc) == 0) {
 		throw std::logic_error("GetClientRect failed");
 	}

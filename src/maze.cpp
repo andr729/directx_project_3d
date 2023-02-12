@@ -1,10 +1,23 @@
 #include "maze.h"
-#include <math.h>
 #include <random>
 #include <map>
 
 #define PI 3.14159265358979323846 
 
+struct SimpleColor {
+	float r, g, b;
+};
+
+struct SimpleVertex {
+	float x;
+	float y;
+	float z;
+	SimpleColor color;
+};
+
+struct Triangle {
+	vertex_t t1[3];
+};
 
 SimpleColor color = {1.0f, 1.0f, 1.0f};
 
@@ -81,7 +94,6 @@ void Union(std::pair<int, int> x, std::pair<int, int> y, std::map<std::pair<int,
 
 Maze getMaze(float length, float width, float height, int side_edges, int seed) {
 	Maze res;
-
 	// Cuboid
 	std::vector<Triangle> cuboid;
 	SimpleVertex cuboid_verticies[8];
@@ -92,18 +104,25 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 			}
 		}
 	}
+	std::vector<Triangle> temp;
 	// top
-	cuboid.emplace_back(makeConvexShape({cuboid_verticies[4], cuboid_verticies[6], cuboid_verticies[7], cuboid_verticies[5]}));
+	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[6], cuboid_verticies[7], cuboid_verticies[5]});
+	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// right
-	cuboid.emplace_back(makeConvexShape({cuboid_verticies[5], cuboid_verticies[7], cuboid_verticies[3], cuboid_verticies[1]}));
+	temp = makeConvexShape({cuboid_verticies[5], cuboid_verticies[7], cuboid_verticies[3], cuboid_verticies[1]});
+	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// front
-	cuboid.emplace_back(makeConvexShape({cuboid_verticies[4], cuboid_verticies[5], cuboid_verticies[1], cuboid_verticies[0]}));
+	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[5], cuboid_verticies[1], cuboid_verticies[0]});
+	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// bottom
-	cuboid.emplace_back(makeConvexShape({cuboid_verticies[0], cuboid_verticies[1], cuboid_verticies[3], cuboid_verticies[2]}));
+	temp = makeConvexShape({cuboid_verticies[0], cuboid_verticies[1], cuboid_verticies[3], cuboid_verticies[2]});
+	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// left
-	cuboid.emplace_back(makeConvexShape({cuboid_verticies[4], cuboid_verticies[0], cuboid_verticies[2], cuboid_verticies[6]}));
+	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[0], cuboid_verticies[2], cuboid_verticies[6]});
+	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// back
-	cuboid.emplace_back(makeConvexShape({cuboid_verticies[2], cuboid_verticies[3], cuboid_verticies[7], cuboid_verticies[6]}));
+	temp = makeConvexShape({cuboid_verticies[2], cuboid_verticies[3], cuboid_verticies[7], cuboid_verticies[6]});
+	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	for (int i = 0; i < cuboid.size(); i++) {
 		res.cuboid[i * 3] = cuboid[i].t1[0];
 		res.cuboid[i * 3 + 1] = cuboid[i].t1[1];
@@ -123,18 +142,20 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 		hexprism_verticies[i].y = height;
 	}
 	// top
-	hexprism.emplace_back(makeConvexShape({hexprism_verticies[0], hexprism_verticies[1], hexprism_verticies[2],hexprism_verticies[3],hexprism_verticies[4],hexprism_verticies[5]}));
+	temp = makeConvexShape({hexprism_verticies[0], hexprism_verticies[1], hexprism_verticies[2],hexprism_verticies[3],hexprism_verticies[4],hexprism_verticies[5]});
+	hexprism.insert(hexprism.end(), temp.begin(), temp.end());
 	// bottom
-	hexprism.emplace_back(makeConvexShape({hexprism_verticies[11], hexprism_verticies[10], hexprism_verticies[9],hexprism_verticies[8],hexprism_verticies[7],hexprism_verticies[6]}));
+	temp = makeConvexShape({hexprism_verticies[11], hexprism_verticies[10], hexprism_verticies[9],hexprism_verticies[8],hexprism_verticies[7],hexprism_verticies[6]});
+	hexprism.insert(hexprism.end(), temp.begin(), temp.end());
 	for (int i = 0; i < 6; i++) {
-		hexprism.emplace_back(makeConvexShape({hexprism_verticies[i + 6], hexprism_verticies[i], hexprism_verticies[(i + 1) % 6], hexprism_verticies[((i + 1) % 6) + 6]}));
+		temp = makeConvexShape({hexprism_verticies[i + 6], hexprism_verticies[i], hexprism_verticies[(i + 1) % 6], hexprism_verticies[((i + 1) % 6) + 6]});
+		hexprism.insert(hexprism.end(), temp.begin(), temp.end());
 	}
 	for (int i = 0; i < hexprism.size(); i++) {
 		res.hexprism[i * 3] = hexprism[i].t1[0];
 		res.hexprism[i * 3 + 1] = hexprism[i].t1[1];
 		res.hexprism[i * 3 + 2] = hexprism[i].t1[2];
 	}
-
 	std::vector<edge> final_edges;
 	std::vector<edge> temp_edges;
 
