@@ -33,9 +33,9 @@ add_custom_target(
 
 
 set (SOURCE_FILES
-    src/D3DApp.h src/D3DApp.cpp src/WinMain.h src/WinMain.cpp "src/maze.h")
+    src/D3DApp.h src/D3DApp.cpp src/WinMain.h src/WinMain.cpp src/maze.h src/maze.cpp)
 
-add_executable (Window ${SOURCE_FILES} "src/maze.h")
+add_executable (Window ${SOURCE_FILES})
 
 target_link_libraries(Window ${DIRECT3D})
 target_link_libraries(Window ${DXGI})

@@ -9,6 +9,7 @@
 #include "D3DApp.h"
 #include "vertex_shader.h",
 #include "pixel_shader.h".
+#include "maze.h"
 
 using DirectX::XMFLOAT4X4;
 using DirectX::XMFLOAT4;
@@ -26,12 +27,6 @@ struct vs_const_buffer_t {
 	XMFLOAT4 padding;
 };
 static_assert(sizeof(vs_const_buffer_t) == 256);
-
-struct vertex_t {
-	FLOAT position[3];
-	FLOAT normal_vector[3];
-	FLOAT color[4];
-};
 
 inline void ThrowIfFailed(HRESULT hr) {
 	if (FAILED(hr)) {
@@ -96,42 +91,6 @@ namespace {
 	vertex_t triangle_data[VERTEX_COUNT];
 
 	constexpr size_t VERTEX_BUFFER_SIZE = sizeof(triangle_data);
-}
-
-struct SimpleColor {
-	FLOAT r, g, b;
-};
-
-struct SimpleVertex {
-	FLOAT x;
-	FLOAT y;
-	FLOAT z;
-	SimpleColor color;
-};
-
-struct Triangle {
-	vertex_t t1[3];
-};
-
-constexpr Triangle makeSingleTriangle(SimpleVertex p1, SimpleVertex p2, SimpleVertex p3) {
-	FLOAT Ax = p2.x - p1.x;
-	FLOAT Ay = p2.y - p1.y;
-	FLOAT Az = p2.z - p1.z;
-
-	FLOAT Bx = p3.x - p1.x;
-	FLOAT By = p3.y - p1.y;
-	FLOAT Bz = p3.z - p1.z;
-
-	FLOAT Nx = Ay * Bz - Az * By;
-	FLOAT Ny = Az * Bx - Ax * Bz;
-	FLOAT Nz = Ax * By - Ay * Bx;
-
-
-	return {{
-		{p1.x, p1.y, p1.z,     Nx, Ny, Nz,    p1.color.r, p1.color.g, p1.color.b, 1.0f},
-		{p2.x, p2.y, p2.z,     Nx, Ny, Nz,    p2.color.r, p2.color.g, p2.color.b, 1.0f},
-		{p3.x, p3.y, p3.z,     Nx, Ny, Nz,    p3.color.r, p3.color.g, p3.color.b, 1.0f},
-	}};
 }
 
 constexpr std::pair<Triangle, Triangle> makeTriangle(SimpleVertex p1, SimpleVertex p2, SimpleVertex p3) {
