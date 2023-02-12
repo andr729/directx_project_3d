@@ -91,6 +91,18 @@ namespace {
 	vertex_t triangle_data[VERTEX_COUNT];
 
 	constexpr size_t VERTEX_BUFFER_SIZE = sizeof(triangle_data);
+
+
+	constinit size_t const NUM_INSTANCES = 20;
+	XMFLOAT4X4 instance_matrices[NUM_INSTANCES];// = {
+		// XMMatrixTranslation(-1, -1, -1),
+		// XMMatrixTranslation(1, 1, 1)
+	// };
+	constinit const size_t INSTANCE_BUFFER_SIZE = sizeof(instance_matrices);
+
+	ComPtr<ID3D12Resource> instance_buffer = nullptr;
+	D3D12_VERTEX_BUFFER_VIEW instance_buffer_view = {};
+
 }
 
 constexpr std::pair<Triangle, Triangle> makeTriangle(SimpleVertex p1, SimpleVertex p2, SimpleVertex p3) {
@@ -190,6 +202,15 @@ void calcNewMatrix() {
 	);
 
 	copyConstBufferToGpu();
+}
+
+void calcInstanceMatrices() {
+	for (size_t k = 0; k < NUM_INSTANCES; ++k) {
+		XMStoreFloat4x4(
+			&instance_matrices[k],
+			XMMatrixRotationZ(k)
+		);
+	}
 }
 
 namespace DXInitAux {
@@ -398,7 +419,48 @@ namespace DXInitAux {
 				.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
 				.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
 				.InstanceDataStepRate = 0
+			},
+			{ // Pierwszy wiersz macierzy instancji
+				.SemanticName = "WORLD",
+				.SemanticIndex = 0,
+				.Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+				.InputSlot = 1,
+				.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
+				.InputSlotClass =
+				D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+				.InstanceDataStepRate = 1
+			},
+			{  // Drugi wiersz macierzy instancji
+				.SemanticName = "WORLD",
+				.SemanticIndex = 1,
+				.Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+				.InputSlot = 1,
+				.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
+				.InputSlotClass =
+				D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+				.InstanceDataStepRate = 1
+			},
+			{  // Trzeci wiersz macierzy instancji
+				.SemanticName = "WORLD",
+				.SemanticIndex = 2,
+				.Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+				.InputSlot = 1,
+				.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
+				.InputSlotClass =
+				D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+				.InstanceDataStepRate = 1
+			},
+			{  // Czwarty wiersz macierzy instancji
+				.SemanticName = "WORLD",
+				.SemanticIndex = 3,
+				.Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+				.InputSlot = 1,
+				.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
+				.InputSlotClass =
+				D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+				.InstanceDataStepRate = 1
 			}
+
 		};
 
 		D3D12_BLEND_DESC blendDesc = {
@@ -570,6 +632,48 @@ namespace DXInitAux {
 		ThrowIfFailed(commandList->Close());
 	}
 
+	void initInstanceBuffer() {
+		D3D12_HEAP_PROPERTIES heap_prop = {
+			.Type = D3D12_HEAP_TYPE_UPLOAD,
+			.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+			.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+			.CreationNodeMask = 1,
+			.VisibleNodeMask = 1
+		};
+		D3D12_RESOURCE_DESC resource_desc = {
+			.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+			.Alignment = 0,
+			.Width = INSTANCE_BUFFER_SIZE,
+			.Height = 1,
+			.DepthOrArraySize = 1,
+			.MipLevels = 1,
+			.Format = DXGI_FORMAT_UNKNOWN,
+			.SampleDesc = {.Count = 1, .Quality = 0 },
+			.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+			.Flags = D3D12_RESOURCE_FLAG_NONE
+		};
+		device->CreateCommittedResource(
+			&heap_prop,
+			D3D12_HEAP_FLAG_NONE,
+			&resource_desc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&instance_buffer)
+		);
+
+		UINT8* dst_data = nullptr;
+		D3D12_RANGE read_range = { 0, 0 };
+		instance_buffer->Map(
+			0, &read_range, reinterpret_cast<void**>(&dst_data)
+		);
+		memcpy(dst_data, instance_matrices, INSTANCE_BUFFER_SIZE);
+		instance_buffer->Unmap(0, nullptr);
+
+		instance_buffer_view.BufferLocation = 
+			instance_buffer->GetGPUVirtualAddress();
+		instance_buffer_view.SizeInBytes = INSTANCE_BUFFER_SIZE;
+		instance_buffer_view.StrideInBytes = sizeof(XMFLOAT4X4);
+	}
 }
 
 void PopulateCommandList(HWND hwnd) {
@@ -619,8 +723,24 @@ void PopulateCommandList(HWND hwnd) {
 	);
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	commandList->DrawInstanced(VERTEX_COUNT, 1, 0, 0);
+	// commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	// commandList->DrawInstanced(VERTEX_COUNT, 1, 0, 0);
+	// commandList->IASetPrimitiveTopology(
+	// 	D3D_PRIMITIVE_TOPOLOGY_LINESTRIP
+	// );
+
+	commandList->IASetVertexBuffers(
+  		0, 1, &vertexBufferView // widok buf. wierzch. ze źdźbłem
+	);
+
+	commandList->IASetVertexBuffers(
+  		1, 1, &instance_buffer_view
+	);
+
+	commandList->DrawInstanced(
+  		VERTEX_COUNT, NUM_INSTANCES, 0, 0
+	);
+
 
 	D3D12_RESOURCE_BARRIER barrier2 = {
 		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION,
@@ -657,8 +777,9 @@ void WaitForPreviousFrame(HWND hwnd) {
 }
 
 void InitDirect3D(HWND hwnd) {
-	
+	calcInstanceMatrices();
 	initTriangleData();
+
 	if (GetClientRect(hwnd, &rc) == 0) {
 		throw std::logic_error("GetClientRect failed");
 	}
@@ -675,6 +796,8 @@ void InitDirect3D(HWND hwnd) {
 	DXInitAux::initRootSignature();
 	DXInitAux::initPipelineState();
 	DXInitAux::initVertexBuffer();
+
+	DXInitAux::initInstanceBuffer();
 
 	ThrowIfFailed(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
 	fenceValue = 1;

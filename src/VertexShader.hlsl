@@ -16,13 +16,16 @@ struct vs_output_t {
 vs_output_t main(
  		float3 pos : POSITION, 
  		float3 norm : NORMAL, 
- 		float4 col : COLOR) {
+ 		float4 col : COLOR,
+		row_major float4x4 mat_w : WORLD,
+  		uint instance_id: SV_InstanceID) {
 	vs_output_t result;
 	
 	float4 NW = mul(float4(norm, 0.0f), matWorldView);
 	float4 LW = mul(dirLight, matView);
 	
-	result.position = mul(float4(pos, 1.0f), matWorldViewProj);
+	result.position = mul(mul(float4(pos, 1.0f), mat_w), matWorldViewProj);
+	// result.position = mul(float4(pos, 1.0f), matWorldViewProj);
 	result.color = mul(
  			max(-dot(normalize(LW), normalize(NW)), 0.0f), 
  			colLight * col);
