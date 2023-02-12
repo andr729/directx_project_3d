@@ -28,4 +28,4 @@ struct Maze {
 	std::vector<HexPrismTransformation> transformations_hexprism;
 };
 
-Maze getMaze(float length, float width, float height, int side_points);
+Maze getMaze(float length, float width, float height, int side_edges, int seed = 14369);
