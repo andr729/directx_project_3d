@@ -52,9 +52,9 @@ std::vector<Triangle> makeConvexShape(std::vector<SimpleVertex> p) {
 
 SimpleVertex rotateXZ(SimpleVertex v, float angle) {
 	SimpleVertex res;
-	res.z = v.z;
-	res.x = cos(angle) * v.x - sin(angle) * v.y;
-	res.y = sin(angle) * v.x + cos(angle) * v.y;
+	res.y = v.y;
+	res.x = cos(angle) * v.x - sin(angle) * v.z;
+	res.z = sin(angle) * v.x + cos(angle) * v.z;
 	return res;
 }
 
