@@ -85,7 +85,7 @@ namespace {
 
 	constexpr size_t VERTEX_SIZE = sizeof(vertex_t) / sizeof(FLOAT);
 
-	constexpr size_t NUM_TRIANGLES = 3 * (2 * 4 + 6 * 2);//60;
+	constexpr size_t NUM_TRIANGLES = 3 * (2 * 4 + 6 * 2);
 	constexpr size_t VERTEX_COUNT = NUM_TRIANGLES * 3;
 
 	vertex_t triangle_data[VERTEX_COUNT];
@@ -93,7 +93,7 @@ namespace {
 	constexpr size_t VERTEX_BUFFER_SIZE = sizeof(triangle_data);
 
 
-	constinit size_t const NUM_INSTANCES = 2;
+	constinit size_t const NUM_INSTANCES = 1;
 	XMFLOAT4X4 instance_matrices[NUM_INSTANCES];// = {
 		// XMMatrixTranslation(-1, -1, -1),
 		// XMMatrixTranslation(1, 1, 1)
@@ -106,9 +106,9 @@ namespace {
 }
 
 void initTriangleData() {
-	auto maze = getMaze(1, .2, .3, 1, 1);
+	auto maze = getMaze(1, .1, .2, 1, 1);
 	for(int i = 0; i < NUM_TRIANGLES; i++)
-		triangle_data[i] = maze.cuboid[i];
+		triangle_data[i] = maze.hexprism[i];
 }
 
 void copyConstBufferToGpu() {
