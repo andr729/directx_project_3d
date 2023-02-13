@@ -147,7 +147,7 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 	temp = makeConvexShape({hexprism_verticies[11], hexprism_verticies[10], hexprism_verticies[9],hexprism_verticies[8],hexprism_verticies[7],hexprism_verticies[6]});
 	hexprism.insert(hexprism.end(), temp.begin(), temp.end());
 	for (int i = 0; i < 6; i++) {
-		temp = makeConvexShape({hexprism_verticies[i + 6], hexprism_verticies[i], hexprism_verticies[(i + 1) % 6], hexprism_verticies[((i + 1) % 6) + 6]});
+		temp = makeConvexShape({hexprism_verticies[i], hexprism_verticies[i + 6], hexprism_verticies[((i + 1) % 6) + 6], hexprism_verticies[(i + 1) % 6]});
 		hexprism.insert(hexprism.end(), temp.begin(), temp.end());
 	}
 	for (int i = 0; i < hexprism.size(); i++) {
