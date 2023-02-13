@@ -168,7 +168,7 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 				leaders[{x, y}] = {x, y};
 
 				if (isPartOfHex(x + 1, y, side_edges)) {
-					if (y == 0) {
+					if (y == 0 || y == 2 * side_edges) {
 						final_edges.push_back({{x, y}, {x + 1, y}});
 					}
 					else {
@@ -176,7 +176,7 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 					}
 				}
 				if (isPartOfHex(x, y + 1, side_edges)) {
-					if (x == 0) {
+					if (x == 0 || x == 2 * side_edges) {
 						final_edges.push_back({{x, y}, {x, y + 1}});
 					}
 					else {
@@ -184,7 +184,7 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 					}
 				}
 				if (isPartOfHex(x - 1, y + 1, side_edges)) {
-					if (x + y == 3 * side_edges) {
+					if (x + y == 3 * side_edges || x + y == side_edges) {
 						final_edges.push_back({{x, y}, {x - 1, y + 1}});
 					}
 					else {
