@@ -120,7 +120,7 @@ void initTriangleAndInstanceData() {
 		triangle_data[i] = maze.cuboid[i];
 
 	for(int i = HEXPRISM_START_POSITION; i < HEXPRISM_START_POSITION + HEXPRISM_VERTEX_COUNT; i++)
-		triangle_data[i] = maze.hexprism[i];
+		triangle_data[i] = maze.hexprism[i - HEXPRISM_START_POSITION];
 
 	NUM_CUBOID_INSTANCES = maze.transformations_cuboid.size();
 	NUM_HEXPRISM_INSTANCES = maze.transformations_hexprism.size();
