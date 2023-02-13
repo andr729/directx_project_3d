@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 
 struct vertex_t {
 	// @TODO: float
