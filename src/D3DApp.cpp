@@ -116,11 +116,11 @@ namespace {
 void initTriangleAndInstanceData() {
 	auto maze = getMaze(1, .1, .2, 1, 1);
 
-	for(int i = CUBOID_START_POSITION; i < CUBOID_START_POSITION + CUBOID_VERTEX_COUNT; i++)
-		triangle_data[i] = maze.cuboid[i];
+	for(int i = 0; i < CUBOID_VERTEX_COUNT; i++)
+		triangle_data[i + CUBOID_START_POSITION] = maze.cuboid[i];
 
-	for(int i = HEXPRISM_START_POSITION; i < HEXPRISM_START_POSITION + HEXPRISM_VERTEX_COUNT; i++)
-		triangle_data[i] = maze.hexprism[i];
+	for(int i = 0; i < HEXPRISM_VERTEX_COUNT; i++)
+		triangle_data[i + HEXPRISM_START_POSITION] = maze.hexprism[i];
 
 	NUM_CUBOID_INSTANCES = maze.transformations_cuboid.size();
 	NUM_HEXPRISM_INSTANCES = maze.transformations_hexprism.size();
