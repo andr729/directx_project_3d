@@ -114,7 +114,7 @@ namespace {
 }
 
 void initTriangleAndInstanceData() {
-	auto maze = getMaze(1, .1, .2, 1, 1);
+	auto maze = getMaze(1, .1, .2, 10, 1);
 
 	for(int i = 0; i < CUBOID_VERTEX_COUNT; i++)
 		triangle_data[i + CUBOID_START_POSITION] = maze.cuboid[i];
@@ -194,7 +194,7 @@ void calcNewMatrix() {
 
 	wvp_matrix = XMMatrixMultiply(
 		wvp_matrix,
-		XMMatrixTranslation(0.0f, 0.0f, 4.0f)
+		XMMatrixTranslation(-10.0f, 0.0f, 50.0f)
 	);
 
 	wvp_matrix = XMMatrixMultiply(
