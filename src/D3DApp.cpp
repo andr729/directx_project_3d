@@ -113,6 +113,29 @@ namespace {
 
 }
 
+namespace player_state {
+	Vector2 position = {0, 0};
+	float rotY = 0;
+	float rotUpDown = 0;
+
+	void rotateUpDown(float value) {
+		rotUpDown += value;
+		
+		// @TODO:
+		if (rotUpDown < -1) rotUpDown = -1;
+		if (rotUpDown > 1) rotUpDown = 1;
+	}
+
+	void rotateY(float value) {
+		rotY += value;
+		rotY = fmodf(rotY, 3.14 * 2);
+	}
+
+	void move(float dx, float dy) {
+		position += {dx, dy};
+	}
+};
+
 void initTriangleAndInstanceData() {
 	auto maze = getMaze(1, .1, .2, 10, 1);
 
@@ -173,28 +196,49 @@ void copyTriangleDataToVertexBuffer() {
 }
 
 void calcNewMatrix() {
+
+	// player_state::position.y -= 0.05;
+	player_state::rotateUpDown(0.01);
+
 	XMMATRIX wvp_matrix;
-	static FLOAT angle = 0.0;
-	angle += 0.005;
+	// static FLOAT angle = 0.0;
+	// angle += 0.005;
 
 	XMStoreFloat4x4(
 		&vsConstBufferData.matWorldView, 	// zmienna typu vs_const_buffer_t z pkt. 2d
 		XMMatrixIdentity()
 	);
 
-	wvp_matrix = XMMatrixMultiply(
-		XMMatrixRotationZ(0),
-		XMMatrixRotationX(2.5f * angle)
-	);
+	// wvp_matrix = XMMatrixRotationX(2.5f * angle);
 
 	XMStoreFloat4x4(
 		&vsConstBufferData.matView, 	// zmienna typu vs_const_buffer_t z pkt. 2d
-		wvp_matrix
+		XMMatrixIdentity()
+	);
+
+	wvp_matrix = XMMatrixIdentity();
+
+	// @TODO: delete this:
+	wvp_matrix = XMMatrixMultiply(
+		wvp_matrix,
+		XMMatrixTranslation(-10.0f, 0.0f, 10.0f)
+	);
+
+	// player stuff:
+	wvp_matrix = XMMatrixMultiply(
+		wvp_matrix,
+		XMMatrixTranslation(player_state::position.x, 0, player_state::position.y)
 	);
 
 	wvp_matrix = XMMatrixMultiply(
 		wvp_matrix,
-		XMMatrixTranslation(-10.0f, 0.0f, 50.0f)
+		XMMatrixRotationY(player_state::rotY)
+	);
+
+	// x or z:
+	wvp_matrix = XMMatrixMultiply(
+		wvp_matrix,
+		XMMatrixRotationX(player_state::rotUpDown)
 	);
 
 	wvp_matrix = XMMatrixMultiply(
