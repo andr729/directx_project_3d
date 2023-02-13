@@ -1,5 +1,6 @@
 #include "WinMain.h"
 #include "D3DApp.h"
+#include <windowsx.h>
 #include <cstdlib>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
@@ -19,6 +20,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 		case WM_PAINT:
 			OnRender(hwnd);
 			ValidateRect(hwnd, nullptr);
+			return 0;
+		case WM_MOUSEMOVE:
+			RECT rc;
+			GetWindowRect(hwnd, &rc);
+			float mid_x = (rc.right - rc.left) / 2.f, mid_y = (rc.bottom - rc.top) / 2.f;
+			float diff_x = GET_X_LPARAM(lParam) - mid_x, diff_y = GET_Y_LPARAM(lParam) - mid_y;
+			player_state::rotateUpDown(diff_y * 0.00001);
+			player_state::rotateY(-diff_x * 0.0001);
+			SetCursorPos(mid_x + rc.left, mid_y + rc.top);
 			return 0;
 		}
 	}

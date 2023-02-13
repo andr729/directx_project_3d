@@ -6,3 +6,9 @@
 void InitDirect3D(HWND hwnd);
 void OnRender(HWND hwnd);
 void OnUpdate(HWND hwnd);
+
+namespace player_state {
+	void rotateUpDown(float value);
+	void rotateY(float value);
+	void move(float dx, float dy);
+}

@@ -198,7 +198,7 @@ void copyTriangleDataToVertexBuffer() {
 void calcNewMatrix() {
 
 	// player_state::position.y -= 0.05;
-	player_state::rotateUpDown(0.01);
+	// player_state::rotateUpDown(0.01);
 
 	XMMATRIX wvp_matrix;
 	// static FLOAT angle = 0.0;

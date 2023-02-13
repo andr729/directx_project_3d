@@ -9,7 +9,6 @@ struct vertex_t {
 	float color[4];
 };
 
-
 struct Vector2 {
 	float x, y;
 
