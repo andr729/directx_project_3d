@@ -2,6 +2,8 @@
 #include <vector>
 #include "base.h"
 
+constexpr int CUBOID_VERTEX_COUNT = 3 * 6 * 2;
+constexpr int HEXPRISM_VERTEX_COUNT = 3 * (2 * 4 + 6 * 2);
 
 struct CuboidTransformation {
 	Vector2 translation;
@@ -13,8 +15,8 @@ struct HexPrismTransformation {
 };
 
 struct Maze {
-	vertex_t cuboid[3 * 6 * 2];
-	vertex_t hexprism[3 * (2 * 4 + 6 * 2)];
+	vertex_t cuboid[CUBOID_VERTEX_COUNT];
+	vertex_t hexprism[HEXPRISM_VERTEX_COUNT];
 	std::vector<CuboidTransformation> transformations_cuboid;
 	std::vector<HexPrismTransformation> transformations_hexprism;
 };

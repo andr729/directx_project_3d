@@ -84,8 +84,13 @@ namespace {
 	ComPtr<ID3D12Resource> depthBuffer;
 	HeapType depthBufferHeap;
 
-	constexpr size_t NUM_TRIANGLES = 3 * (2 * 4 + 6 * 2);
-	constexpr size_t VERTEX_COUNT = NUM_TRIANGLES * 3;
+	
+	constexpr size_t VERTEX_COUNT = CUBOID_VERTEX_COUNT + HEXPRISM_VERTEX_COUNT;
+	constexpr size_t CUBOID_START_POSITION = 0;
+	constexpr size_t HEXPRISM_START_POSITION = CUBOID_VERTEX_COUNT;
+	static_assert(VERTEX_COUNT % 3 == 0);
+
+	constexpr size_t NUM_TRIANGLES = VERTEX_COUNT / 3;
 
 	vertex_t triangle_data[VERTEX_COUNT];
 
@@ -104,7 +109,11 @@ namespace {
 
 void initTriangleData() {
 	auto maze = getMaze(1, .1, .2, 1, 1);
-	for(int i = 0; i < NUM_TRIANGLES; i++)
+
+	for(int i = CUBOID_START_POSITION; i < CUBOID_START_POSITION + CUBOID_VERTEX_COUNT; i++)
+		triangle_data[i] = maze.cuboid[i];
+
+	for(int i = HEXPRISM_START_POSITION; i < HEXPRISM_START_POSITION + HEXPRISM_VERTEX_COUNT; i++)
 		triangle_data[i] = maze.hexprism[i];
 }
 
@@ -693,7 +702,7 @@ void PopulateCommandList(HWND hwnd) {
 	);
 
 	commandList->DrawInstanced(
-  		VERTEX_COUNT, NUM_INSTANCES, 0, 0
+  		HEXPRISM_VERTEX_COUNT, NUM_INSTANCES, HEXPRISM_START_POSITION, 0
 	);
 
 
