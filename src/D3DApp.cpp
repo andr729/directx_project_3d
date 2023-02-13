@@ -132,7 +132,7 @@ namespace player_state {
 	}
 
 	void move(float dx, float dy) {
-		position += {dx, dy};
+		position += {cos(rotY) * dx - sin(rotY) * dy, sin(rotY) * dx + cos(rotY) * dy};
 	}
 };
 
@@ -227,7 +227,7 @@ void calcNewMatrix() {
 	// player stuff:
 	wvp_matrix = XMMatrixMultiply(
 		wvp_matrix,
-		XMMatrixTranslation(player_state::position.x, 0, player_state::position.y)
+		XMMatrixTranslation(player_state::position.x, -1, player_state::position.y)
 	);
 
 	wvp_matrix = XMMatrixMultiply(

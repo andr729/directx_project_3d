@@ -5,6 +5,7 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 	try {
+		const float movespeed = 0.05;
 		switch (Msg) {
 		case WM_CREATE:
 			SetTimer(hwnd, 200, 10, nullptr);
@@ -16,6 +17,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 		case WM_TIMER:
 			OnUpdate(hwnd);
 			InvalidateRect(hwnd, nullptr, true);
+			if ((GetAsyncKeyState(0x57) & 0x8000) > 0) {
+				player_state::move(0,-movespeed);
+			}
+			if ((GetAsyncKeyState(0x41) & 0x8000) > 0) {
+				player_state::move(movespeed, 0);
+			}
+			if ((GetAsyncKeyState(0x53) & 0x8000) > 0) {
+				player_state::move(0, movespeed);
+			}
+			if ((GetAsyncKeyState(0x44) & 0x8000) > 0) {
+				player_state::move(-movespeed, 0);
+			}
 			return 0;
 		case WM_PAINT:
 			OnRender(hwnd);
@@ -25,10 +38,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 			RECT rc;
 			GetWindowRect(hwnd, &rc);
 			float mid_x = (rc.right - rc.left) / 2.f, mid_y = (rc.bottom - rc.top) / 2.f;
-			float diff_x = GET_X_LPARAM(lParam) - mid_x, diff_y = GET_Y_LPARAM(lParam) - mid_y;
-			player_state::rotateUpDown(diff_y * 0.00001);
-			player_state::rotateY(-diff_x * 0.0001);
-			SetCursorPos(mid_x + rc.left, mid_y + rc.top);
+			float diff_x = GET_X_LPARAM(lParam) - mid_x + 8, diff_y = GET_Y_LPARAM(lParam) - mid_y + 31.5;
+			player_state::rotateUpDown(-diff_y * 0.001);
+			player_state::rotateY(-diff_x * 0.001);
+			float set_x = mid_x + rc.left, set_y = mid_y + rc.top;
+			SetCursorPos(set_x, set_y);
 			return 0;
 		}
 	}
@@ -81,6 +95,8 @@ INT WINAPI wWinMain(_In_ [[maybe_unused]] HINSTANCE instance,
 	}
 
 	ShowWindow(hwnd, cmd_show);
+	
+	ShowCursor(false);
 
 	MSG msg = {};
 	while (BOOL rv = GetMessage(&msg, nullptr, 0, 0) != 0) {
