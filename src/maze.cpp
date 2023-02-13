@@ -2,7 +2,7 @@
 #include <random>
 #include <map>
 
-#define PI 3.14159265358979323846 
+constexpr double PI = 3.14159265358979323846;
 
 struct SimpleColor {
 	float r, g, b;
@@ -136,7 +136,6 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 	for (int i = 1; i < 6; i++) {
 		hexprism_verticies[i] = rotateXZ(hexprism_verticies[0], 2 * PI * i / 6);
 	}
-	hexprism_verticies[6] = {0, height, width};
 	for (int i = 6; i < 12; i++) {
 		hexprism_verticies[i] = hexprism_verticies[i - 6];
 		hexprism_verticies[i].y = height;
