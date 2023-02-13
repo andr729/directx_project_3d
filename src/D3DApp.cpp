@@ -97,8 +97,14 @@ namespace {
 	constexpr size_t VERTEX_BUFFER_SIZE = sizeof(triangle_data);
 
 
-	constinit size_t const NUM_INSTANCES = 1;
-	XMFLOAT4X4 instance_matrices[NUM_INSTANCES];
+	size_t NUM_HEXPRISM_INSTANCES;
+	size_t NUM_CUBOID_INSTANCES;
+
+	size_t CUBOID_INSTANCE_DATA_START;
+	size_t HEXPRISM_INSTANCE_DATA_START;
+
+	constinit size_t const MAX_NUM_INSTANCES = 2048;
+	XMFLOAT4X4 instance_matrices[MAX_NUM_INSTANCES];
 	
 	constinit const size_t INSTANCE_BUFFER_SIZE = sizeof(instance_matrices);
 
@@ -107,7 +113,7 @@ namespace {
 
 }
 
-void initTriangleData() {
+void initTriangleAndInstanceData() {
 	auto maze = getMaze(1, .1, .2, 1, 1);
 
 	for(int i = CUBOID_START_POSITION; i < CUBOID_START_POSITION + CUBOID_VERTEX_COUNT; i++)
@@ -115,6 +121,39 @@ void initTriangleData() {
 
 	for(int i = HEXPRISM_START_POSITION; i < HEXPRISM_START_POSITION + HEXPRISM_VERTEX_COUNT; i++)
 		triangle_data[i] = maze.hexprism[i];
+
+	NUM_CUBOID_INSTANCES = maze.transformations_cuboid.size();
+	NUM_HEXPRISM_INSTANCES = maze.transformations_hexprism.size();
+
+	CUBOID_INSTANCE_DATA_START = 0;
+	HEXPRISM_INSTANCE_DATA_START = NUM_CUBOID_INSTANCES;
+
+	assert(NUM_CUBOID_INSTANCES + NUM_HEXPRISM_INSTANCES < MAX_NUM_INSTANCES);
+
+	for (size_t k = 0;
+			k < NUM_CUBOID_INSTANCES;
+			++k) {
+		auto& trn = maze.transformations_cuboid[k];
+
+		XMStoreFloat4x4(
+			&instance_matrices[k + CUBOID_INSTANCE_DATA_START],
+			XMMatrixMultiply( 
+				XMMatrixRotationZ(trn.rotation),
+				XMMatrixTranslation(trn.translation.x, trn.translation.y, 0)
+			)
+		);
+	}
+
+	for (size_t k = 0;
+			k < NUM_HEXPRISM_INSTANCES;
+			++k) {
+		auto& trn = maze.transformations_hexprism[k];
+
+		XMStoreFloat4x4(
+			&instance_matrices[k + HEXPRISM_INSTANCE_DATA_START],
+			XMMatrixTranslation(trn.translation.x, trn.translation.y, 0)
+		);
+	}
 }
 
 void copyConstBufferToGpu() {
@@ -173,14 +212,6 @@ void calcNewMatrix() {
 	copyConstBufferToGpu();
 }
 
-void calcInstanceMatrices() {
-	for (size_t k = 0; k < NUM_INSTANCES; ++k) {
-		XMStoreFloat4x4(
-			&instance_matrices[k],
-			XMMatrixRotationZ(k)
-		);
-	}
-}
 
 namespace DXInitAux {
 	void inline createHeap(const D3D12_DESCRIPTOR_HEAP_DESC& desc, HeapType& heap) {
@@ -702,9 +733,18 @@ void PopulateCommandList(HWND hwnd) {
 	);
 
 	commandList->DrawInstanced(
-  		HEXPRISM_VERTEX_COUNT, NUM_INSTANCES, HEXPRISM_START_POSITION, 0
+		CUBOID_VERTEX_COUNT, 
+		NUM_CUBOID_INSTANCES, 
+		CUBOID_START_POSITION, 
+		CUBOID_INSTANCE_DATA_START
 	);
 
+	commandList->DrawInstanced(
+  		HEXPRISM_VERTEX_COUNT, 
+		NUM_HEXPRISM_INSTANCES, 
+		HEXPRISM_START_POSITION, 
+		HEXPRISM_INSTANCE_DATA_START
+	);
 
 	D3D12_RESOURCE_BARRIER barrier2 = {
 		.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION,
@@ -741,9 +781,7 @@ void WaitForPreviousFrame(HWND hwnd) {
 }
 
 void InitDirect3D(HWND hwnd) {
-	calcInstanceMatrices();
-	initTriangleData();
-
+	initTriangleAndInstanceData();
 	
 	if (GetClientRect(hwnd, &rc) == 0) {
 		throw std::logic_error("GetClientRect failed");
