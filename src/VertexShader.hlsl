@@ -17,6 +17,7 @@ vs_output_t main(
  		float3 pos : POSITION, 
  		float3 norm : NORMAL, 
  		float4 col : COLOR,
+		float2 tex : TEXCOORD,
 		row_major float4x4 mat_w : WORLD,
   		uint instance_id: SV_InstanceID) {
 	vs_output_t result;
