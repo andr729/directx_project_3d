@@ -215,8 +215,8 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 		Vector2 v1 = coordsToHexOffset(edge.n1.x, edge.n1.y, length, width), v2 = coordsToHexOffset(edge.n2.x, edge.n2.y, length, width);
 		res.transformations_cuboid.push_back({
 			{(v1.x + v2.x) / 2, (v1.y + v2.y) / 2},
-			float((edge.n1.x - edge.n2.x == 0) ? -2 * PI / 3 :
-			((edge.n1.y - edge.n2.y == 0) ? 0 : 2 * PI / 3))
+			float((edge.n1.x - edge.n2.x == 0) ? 2 * PI / 3 :
+			((edge.n1.y - edge.n2.y == 0) ? 0 : -2 * PI / 3))
 			});
 	}
 

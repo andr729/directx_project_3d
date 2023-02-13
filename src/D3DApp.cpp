@@ -138,8 +138,8 @@ void initTriangleAndInstanceData() {
 		XMStoreFloat4x4(
 			&instance_matrices[k + CUBOID_INSTANCE_DATA_START],
 			XMMatrixMultiply( 
-				XMMatrixRotationZ(trn.rotation),
-				XMMatrixTranslation(trn.translation.x, trn.translation.y, 0)
+				XMMatrixRotationY(trn.rotation),
+				XMMatrixTranslation(trn.translation.x, 0, trn.translation.y)
 			)
 		);
 	}
@@ -151,7 +151,7 @@ void initTriangleAndInstanceData() {
 
 		XMStoreFloat4x4(
 			&instance_matrices[k + HEXPRISM_INSTANCE_DATA_START],
-			XMMatrixTranslation(trn.translation.x, trn.translation.y, 0)
+			XMMatrixTranslation(trn.translation.x, 0, trn.translation.y)
 		);
 	}
 }
@@ -183,8 +183,8 @@ void calcNewMatrix() {
 	);
 
 	wvp_matrix = XMMatrixMultiply(
-		XMMatrixRotationY(2.5f * angle),
-		XMMatrixRotationX(0)
+		XMMatrixRotationZ(0),
+		XMMatrixRotationX(2.5f * angle)
 	);
 
 	XMStoreFloat4x4(
