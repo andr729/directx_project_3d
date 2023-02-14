@@ -1,6 +1,7 @@
 #include <d3d12.h>
 #include <directxmath.h>
 #include <dxgi1_6.h>
+#include <wincodec.h>
 #include <wrl.h>
 #include <utility>
 #include <cmath>
@@ -11,6 +12,7 @@
 #include "pixel_shader.h".
 #include "base.h"
 #include "maze.h"
+#include "global_state.hpp"
 
 using DirectX::XMFLOAT4X4;
 using DirectX::XMFLOAT4;
@@ -277,6 +279,15 @@ namespace DXInitAux {
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
 			IID_PPV_ARGS(&resource)
+		));
+	}
+
+	void initWicFactory() {
+		ThrowIfFailed(CoCreateInstance(
+			CLSID_WICImagingFactory,
+			nullptr,
+			CLSCTX_INPROC_SERVER,
+			IID_PPV_ARGS(&img_factory)
 		));
 	}
 
