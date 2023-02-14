@@ -986,8 +986,23 @@ void PopulateCommandList(HWND hwnd) {
 	
 	ID3D12DescriptorHeap* ppHeaps[] = { cbvHeap.Get() };
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
+	D3D12_GPU_DESCRIPTOR_HANDLE gpu_desc_handle =
+	// @TODO: this heap?
+		cbvHeap->GetGPUDescriptorHandleForHeapStart();
 	
-	commandList->SetGraphicsRootDescriptorTable(0, cbvHeap->GetGPUDescriptorHandleForHeapStart());
+	commandList->SetGraphicsRootDescriptorTable(
+		0, gpu_desc_handle
+	);
+	
+	gpu_desc_handle.ptr +=
+		device->GetDescriptorHandleIncrementSize(
+			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+		);
+	
+	commandList->SetGraphicsRootDescriptorTable(
+		1, gpu_desc_handle
+	);
 	
 	commandList->RSSetViewports(1, &viewport);
 	commandList->RSSetScissorRects(1, &rc);
