@@ -144,7 +144,7 @@ namespace player_state {
 				sin(rotY) * dx + cos(rotY) * dy
 			};
 		
-		CircObj player = {new_position, 10};
+		CircObj player = {new_position, 100};
 		if (obj_handler.collidesWith(player)) {
 			return;
 		}
