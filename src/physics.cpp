@@ -35,8 +35,8 @@ bool collides(const Object& p, const Object& q) {
 	Vector2 initial_axis0 = {1, 0}; // arbitrary
 	Vector2 initial_axis1 = {-1, 0}; // arbitrary
 
-	Vector2 p0 = p.supportFunction(initial_axis0) - q.supportFunction(-initial_axis0);
-	Vector2 p1 = p.supportFunction(initial_axis1) - q.supportFunction(-initial_axis1);
+	Vector2 p0 = p.supportFunction(initial_axis0.deg()) - q.supportFunction(-initial_axis0.deg());
+	Vector2 p1 = p.supportFunction(initial_axis1.deg()) - q.supportFunction(-initial_axis1.deg());
 
 	Vector2 delta = p1 - p0;
 	Vector2 p2;
@@ -45,8 +45,8 @@ bool collides(const Object& p, const Object& q) {
 	Vector2 initial_axis2_guess1 = delta.rot90();
 	Vector2 initial_axis2_guess2 = delta.rot270();
 
-	Vector2 p2_guess1 = p.supportFunction(initial_axis2_guess1) - q.supportFunction(-initial_axis2_guess1);
-	Vector2 p2_guess2 = p.supportFunction(initial_axis2_guess2) - q.supportFunction(-initial_axis2_guess2);
+	Vector2 p2_guess1 = p.supportFunction(initial_axis2_guess1.deg()) - q.supportFunction(-initial_axis2_guess1.deg());
+	Vector2 p2_guess2 = p.supportFunction(initial_axis2_guess2.deg()) - q.supportFunction(-initial_axis2_guess2.deg());
 
 	if (dot(p2_guess1, initial_axis2_guess1) > 0) {
 		p2 = p2_guess1;
@@ -85,7 +85,7 @@ bool collides(const Object& p, const Object& q) {
 			np1 = prev_p1;
 		}
 
-		auto new_point = p.supportFunction(dir) - q.supportFunction(-dir);
+		auto new_point = p.supportFunction(dir.deg()) - q.supportFunction(-dir.deg());
 
 		if (dot(new_point, dir) < 0) return false;
 
@@ -94,4 +94,22 @@ bool collides(const Object& p, const Object& q) {
 		prev_p0 = np0;
 		prev_p1 = np1;
 	}
+}
+
+Vector2 CircObj::supportFunction(float deg) const {
+	return Vector2{sin(deg), cos(deg)} * rad;
+}
+
+
+void ObjectHandler::addObject(Object* obj) {
+	objects.push_back(obj);
+}
+
+bool ObjectHandler::collidesWith(const Object& obj) {
+	for (auto o: objects) {
+		if (collides(*o, obj)) {
+			return true;
+		}
+	}
+	return false;
 }

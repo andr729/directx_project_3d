@@ -3,15 +3,21 @@
 #include "physics.hpp"
 #include "maze.h"
 
-struct Rectangle : Object {
+struct RectangleObj: public Object {
 	CuboidTransformation t;
 	float length;
 	float width;
-	Vector2 supportFunction(float angle);
+	RectangleObj(CuboidTransformation t, float length, float width):
+		t(t), length(length), width(width) {}
+	
+	Vector2 supportFunction(float angle) const override;
 };
 
-struct Hex : Object {
+struct HexObj: public Object {
 	HexPrismTransformation t;
 	float width;
-	Vector2 supportFunction(float angle);
+	HexObj(HexPrismTransformation t, float width):
+		t(t), width(width) {}
+
+	Vector2 supportFunction(float angle) const override;
 };

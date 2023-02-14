@@ -75,6 +75,10 @@ struct Vector2 {
 	Vector2 rot270() const {
 		return {y, -x};
 	}
+
+	float deg() const {
+		return std::atan(x/y);
+	}
 };
 
 

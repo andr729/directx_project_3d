@@ -33,7 +33,8 @@ add_custom_target(
 
 
 set (SOURCE_FILES
-    src/D3DApp.h src/D3DApp.cpp src/WinMain.h src/WinMain.cpp src/maze.h src/maze.cpp src/bitmap.cpp)
+    src/D3DApp.h src/D3DApp.cpp src/WinMain.h src/WinMain.cpp src/maze.h src/maze.cpp src/bitmap.cpp
+    src/physics.cpp src/mazephysics.cpp)
 
 add_executable (Window ${SOURCE_FILES})
 

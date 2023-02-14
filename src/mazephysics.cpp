@@ -2,7 +2,7 @@
 
 constexpr double PI = 3.14159265358979323846;
 
-Vector2 Rectangle::supportFunction(float angle) {
+Vector2 RectangleObj::supportFunction(float angle) const {
 	float rotation = fmod(angle - t.rotation + 2 * PI, 2 * PI);
 	if (rotation < PI / 2) {
 		return Vector2{length, width} + t.translation;
@@ -16,7 +16,7 @@ Vector2 Rectangle::supportFunction(float angle) {
 	return Vector2{-length, width} + t.translation;
 }
 
-Vector2 Hex::supportFunction(float angle) {
+Vector2 HexObj::supportFunction(float angle) const {
 	if (rotation < PI / 3) {
 		return Vector2{0, width} + t.translation;
 	}

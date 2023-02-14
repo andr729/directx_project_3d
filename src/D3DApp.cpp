@@ -12,6 +12,7 @@
 #include "pixel_shader.h".
 #include "base.h"
 #include "maze.h"
+#include "mazephysics.hpp"
 #include "global_state.hpp"
 #include "bitmap.hpp"
 
@@ -112,6 +113,9 @@ namespace {
 	ComPtr<ID3D12Resource> instance_buffer = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW instance_buffer_view = {};
 
+
+	ObjectHandler obj_handler;
+
 }
 
 namespace player_state {
@@ -133,12 +137,28 @@ namespace player_state {
 	}
 
 	void move(float dx, float dy) {
-		position += {cos(rotY) * dx - sin(rotY) * dy, sin(rotY) * dx + cos(rotY) * dy};
+		auto new_position = position + 
+			Vector2{
+				cos(rotY) * dx - sin(rotY) * dy, 
+				sin(rotY) * dx + cos(rotY) * dy
+			};
+		
+		CircObj player = {new_position, 10};
+		if (obj_handler.collidesWith(&player)) {
+			return;
+		}
+
+		position = new_position;
 	}
 };
 
 void initTriangleAndInstanceData() {
-	auto maze = getMaze(1, .1, .2, 10, 1);
+	const float length = 1;
+	const float width = .1;
+	const float height = .2;
+	const int side_edges = 10;
+
+	auto maze = getMaze(length, width, height, side_edges, 1);
 
 	for(int i = 0; i < CUBOID_VERTEX_COUNT; i++)
 		triangle_data[i + CUBOID_START_POSITION] = maze.cuboid[i];
@@ -177,6 +197,18 @@ void initTriangleAndInstanceData() {
 			&instance_matrices[k + HEXPRISM_INSTANCE_DATA_START],
 			XMMatrixTranslation(trn.translation.x, 0, trn.translation.y)
 		);
+	}
+
+
+	// Making objects:
+	for(int i = 0; i < maze.transformations_cuboid.size(); i++) {
+		auto obj = new RectangleObj{maze.transformations_cuboid[i], length, width};
+		obj_handler.addObject(obj);
+	}
+
+	for(int i = 0; i < maze.transformations_hexprism.size(); i++) {
+		auto obj = new HexObj(maze.transformations_hexprism[i], width);
+		obj_handler.addObject(obj);
 	}
 }
 
