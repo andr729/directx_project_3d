@@ -11,6 +11,7 @@ cbuffer vs_const_buffer_t {
 struct vs_output_t {
 	float4 position : SV_POSITION;
 	float4 color : COLOR;
+	float2 tex : TEXCOORD;
 };
 
 vs_output_t main(
@@ -30,5 +31,8 @@ vs_output_t main(
 	result.color = mul(
  			max(-dot(normalize(LW), normalize(NW)), 0.0f), 
  			colLight * col);
+
+	result.tex = tex;
+
 	return result;
 }
