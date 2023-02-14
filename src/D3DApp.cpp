@@ -144,7 +144,7 @@ namespace player_state {
 				sin(rotY) * dx + cos(rotY) * dy
 			};
 		
-		CircObj player = {new_position, 100};
+		CircObj player = {new_position, 10};
 		if (obj_handler.collidesWith(player)) {
 			return;
 		}
@@ -163,7 +163,7 @@ void initTriangleAndInstanceData() {
 	const float length = 1;
 	const float width = .1;
 	const float height = .2;
-	const int side_edges = 10;
+	const int side_edges = 1;
 
 	auto maze = getMaze(length, width, height, side_edges, 1);
 
@@ -237,32 +237,17 @@ void copyTriangleDataToVertexBuffer() {
 
 void calcNewMatrix() {
 
-	// player_state::position.y -= 0.05;
-	// player_state::rotateUpDown(0.01);
-
-	XMMATRIX wvp_matrix;
-	// static FLOAT angle = 0.0;
-	// angle += 0.005;
-
 	XMStoreFloat4x4(
-		&vsConstBufferData.matWorldView, 	// zmienna typu vs_const_buffer_t z pkt. 2d
+		&vsConstBufferData.matWorldView,
 		XMMatrixIdentity()
 	);
 
-	// wvp_matrix = XMMatrixRotationX(2.5f * angle);
-
 	XMStoreFloat4x4(
-		&vsConstBufferData.matView, 	// zmienna typu vs_const_buffer_t z pkt. 2d
+		&vsConstBufferData.matView,
 		XMMatrixIdentity()
 	);
 
-	wvp_matrix = XMMatrixIdentity();
-
-	// @TODO: delete this:
-	wvp_matrix = XMMatrixMultiply(
-		wvp_matrix,
-		XMMatrixTranslation(-10.0f, 0.0f, 10.0f)
-	);
+	XMMATRIX wvp_matrix = XMMatrixIdentity();
 
 	// player stuff:
 	wvp_matrix = XMMatrixMultiply(
@@ -284,7 +269,7 @@ void calcNewMatrix() {
 	wvp_matrix = XMMatrixMultiply(
 		wvp_matrix, 
 		XMMatrixPerspectiveFovLH(
-			45.0f, viewport.Width / viewport.Height, 1.0f, 100.0f
+			45.0f, viewport.Width / viewport.Height, 0.1f, 100.0f
 		)
 	);
 	wvp_matrix = XMMatrixTranspose(wvp_matrix);

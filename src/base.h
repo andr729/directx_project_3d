@@ -77,7 +77,9 @@ struct Vector2 {
 	}
 
 	float deg() const {
-		return std::atan(x/y);
+		// auto rx = -(-y);
+		// auto ry = x;
+		return std::atan2(y, x);
 	}
 };
 

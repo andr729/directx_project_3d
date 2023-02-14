@@ -47,14 +47,16 @@ bool collides(const Object& p, const Object& q) {
 	Vector2 initial_axis2_guess1 = delta.rot90();
 	Vector2 initial_axis2_guess2 = delta.rot270();
 
-	Vector2 p2_guess1 = support(initial_axis2_guess1.deg());
-	Vector2 p2_guess2 = support(initial_axis2_guess2.deg());
+	auto deg1 = initial_axis2_guess1.deg();
+	auto deg2 = initial_axis2_guess2.deg();
+	Vector2 p2_guess1 = support(deg1);
+	Vector2 p2_guess2 = support(deg2);
 
 	if (dot(p2_guess1, initial_axis2_guess1) > 0) {
 		p2 = p2_guess1;
 		initial_axis2 = initial_axis2_guess1;
 	}
-	else if (dot(p2_guess2, initial_axis2_guess1) > 0) {
+	else if (dot(p2_guess2, initial_axis2_guess2) > 0) {
 		p2 = p2_guess2;
 		initial_axis2 = initial_axis2_guess2;
 
@@ -67,15 +69,15 @@ bool collides(const Object& p, const Object& q) {
 
 	Triangle simplex = {p0, p1, p2};
 	
-	Vector2 prev_new = p2;
 	Vector2 prev_p0 = p0;
 	Vector2 prev_p1 = p1;
+	Vector2 prev_new = p2;
 	Vector2 prev_dir = initial_axis2;
 
 	while (true) {
 		if (simplex.hasOrigin()) return true;
 		
-		Vector2 np0, np1, dir;
+		Vector2 np0, np1;
 
 		// @TODO: or reverse:
 		if (isLeft(prev_p0, prev_new, {0,0})) {
@@ -86,6 +88,8 @@ bool collides(const Object& p, const Object& q) {
 			np0 = prev_new;
 			np1 = prev_p1;
 		}
+
+		Vector2 dir = (np1 - np0).rot90();
 
 		auto new_point = support(dir.deg());
 
