@@ -257,6 +257,7 @@ void calcNewMatrix() {
 	copyConstBufferToGpu();
 }
 
+void WaitForPreviousFrame(HWND hwnd);
 
 namespace DXInitAux {
 	void inline createHeap(const D3D12_DESCRIPTOR_HEAP_DESC& desc, HeapType& heap) {
@@ -780,7 +781,7 @@ namespace DXInitAux {
 		instance_buffer_view.StrideInBytes = sizeof(XMFLOAT4X4);
 	}
 
-	void initTextureView() {
+	void initTextureView(HWND hwnd) {
 		// Budowa właściwego zasobu tekstury
 		D3D12_HEAP_PROPERTIES tex_heap_prop = {
 			.Type = D3D12_HEAP_TYPE_DEFAULT,
@@ -862,8 +863,12 @@ namespace DXInitAux {
 		};
 		
 		//@TODO: jakie reset?
+		// commandList->Reset(commandAllocator.Get());
 		// ... ID3D12GraphicsCommandList::Reset() - to dlatego lista
 		// poleceń i obiekt stanu potoku muszą być wcześniej utworzone
+		// ThrowIfFailed(commandAllocator->Reset());
+		ThrowIfFailed(commandList->Reset(commandAllocator.Get(), pipelineState.Get()));
+
 		UINT const MAX_SUBRESOURCES = 1;
 		RequiredSize = 0;
 		D3D12_PLACED_SUBRESOURCE_FOOTPRINT Layouts[MAX_SUBRESOURCES];
@@ -931,8 +936,7 @@ namespace DXInitAux {
 				.pResource = texture_resource.Get(),
 				.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
 				.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST,
-				.StateAfter = 
-				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+				.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 			},
 		};
 		
@@ -974,6 +978,7 @@ namespace DXInitAux {
 
 		// ... WaitForGPU() - nie można usuwać texture_upload_buffer
 		// zanim nie skopiuje się jego zawartości
+		WaitForPreviousFrame(hwnd);
 	
 	}
 }
@@ -1120,7 +1125,6 @@ void InitDirect3D(HWND hwnd) {
 	DXInitAux::initInstanceBuffer();
 
 	// DXInitAux::initWicFactory();
-	DXInitAux::initTextureView();
 
 	ThrowIfFailed(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
 	fenceValue = 1;
@@ -1139,6 +1143,8 @@ void InitDirect3D(HWND hwnd) {
 	// list in our main loop but for now, we just want to wait for setup to 
 	// complete before continuing.
 	WaitForPreviousFrame(hwnd);
+
+	DXInitAux::initTextureView(hwnd);
 }
 
 void OnUpdate(HWND hwnd) {

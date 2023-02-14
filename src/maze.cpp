@@ -36,9 +36,9 @@ constexpr Triangle makeSingleTriangle(SimpleVertex p1, SimpleVertex p2, SimpleVe
 
 
 	return { {
-		{p1.x, p1.y, p1.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,		0, 0},
-		{p2.x, p2.y, p2.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,		0, 1},
-		{p3.x, p3.y, p3.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,		1, 0},
+		{p1.x, p1.y, p1.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,   0.1, 0.3},
+		{p2.x, p2.y, p2.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,   0.0, 0.0},
+		{p3.x, p3.y, p3.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,   0.2, 0.7},
 	} };
 }
 
