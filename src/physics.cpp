@@ -32,6 +32,9 @@ bool isLeft(Vector2 a, Vector2 b, Vector2 c){
 }
 
 bool collides(const Object& p, const Object& q) {
+	// q - player
+	// p - kolizja z
+
 	#define support(axis) p.supportFunction((axis)) - q.supportFunction(-(axis));
 
 	Vector2 initial_axis0 = {1, 0}; // arbitrary
@@ -45,7 +48,7 @@ bool collides(const Object& p, const Object& q) {
 	Vector2 initial_axis2;
 
 	Vector2 initial_axis2_guess1 = delta.rot270();
-	Vector2 initial_axis2_guess2 = delta.rot90();
+	Vector2 initial_axis2_guess2 = (-delta).rot270();
 
 	auto deg1 = initial_axis2_guess1.deg();
 	auto deg2 = initial_axis2_guess2.deg();
@@ -75,7 +78,10 @@ bool collides(const Object& p, const Object& q) {
 	Vector2 prev_dir = initial_axis2;
 
 	for (int i = 0; i < 20; i++) {
-		if (simplex.hasOrigin()) return true;
+		if (simplex.hasOrigin()) {
+
+			return true;
+		}
 		
 		Vector2 np0, np1;
 
@@ -112,8 +118,8 @@ void ObjectHandler::addObject(Object* obj) {
 	objects.push_back(obj);
 }
 
-bool ObjectHandler::collidesWith(const Object& obj) {
-	for (auto o: objects) {
+bool ObjectHandler::collidesWith(const Object& obj) const {
+	for (const auto& o: objects) {
 		if (collides(*o, obj)) {
 			return true;
 		}

@@ -154,8 +154,8 @@ namespace player_state {
 
 	void moveUp(float dz) {
 		height += dz;
-		height = min(height, 0);
-		height = max(height, -10); 
+		height = min(height, 10);
+		height = max(height, 0); 
 	}
 };
 
@@ -252,7 +252,7 @@ void calcNewMatrix() {
 	// player stuff:
 	wvp_matrix = XMMatrixMultiply(
 		wvp_matrix,
-		XMMatrixTranslation(player_state::position.x, player_state::height, player_state::position.y)
+		XMMatrixTranslation(-player_state::position.x, -player_state::height, -player_state::position.y)
 	);
 
 	wvp_matrix = XMMatrixMultiply(
