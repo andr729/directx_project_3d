@@ -13,6 +13,7 @@
 #include "base.h"
 #include "maze.h"
 #include "global_state.hpp"
+#include "bitmap.hpp"
 
 using DirectX::XMFLOAT4X4;
 using DirectX::XMFLOAT4;
@@ -69,6 +70,7 @@ namespace {
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 
 	ComPtr<ID3D12Resource> vsConstBuffer;
+	ComPtr<ID3D12Resource> texture_resource;
 	
 	// Matrices are assigned dynamicly 
 	vs_const_buffer_t vsConstBufferData = {
@@ -280,6 +282,7 @@ namespace DXInitAux {
 	}
 
 	void initWicFactory() {
+		// @TODO: this does not work for some reason
 		ThrowIfFailed(CoCreateInstance(
 			CLSID_WICImagingFactory,
 			nullptr,
@@ -432,9 +435,11 @@ namespace DXInitAux {
 			.NumDescriptors = FrameCount,
 			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
 		};
+
+
 		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {
 			.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-			.NumDescriptors = 1,
+			.NumDescriptors = 2,
 			.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 			.NodeMask = 0  
 		};
@@ -774,6 +779,203 @@ namespace DXInitAux {
 		instance_buffer_view.SizeInBytes = INSTANCE_BUFFER_SIZE;
 		instance_buffer_view.StrideInBytes = sizeof(XMFLOAT4X4);
 	}
+
+	void initTextureView() {
+		// Budowa właściwego zasobu tekstury
+		D3D12_HEAP_PROPERTIES tex_heap_prop = {
+			.Type = D3D12_HEAP_TYPE_DEFAULT,
+			.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+			.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+			.CreationNodeMask = 1,
+			.VisibleNodeMask = 1
+		};
+			D3D12_RESOURCE_DESC tex_resource_desc = {
+			.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+			.Alignment = 0,
+			.Width = bmp_width,
+			.Height = bmp_height,
+			.DepthOrArraySize = 1,
+			.MipLevels = 1,
+			.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+			.SampleDesc = {.Count = 1, .Quality = 0 },
+			.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
+			.Flags = D3D12_RESOURCE_FLAG_NONE
+		};
+
+		device->CreateCommittedResource(
+			&tex_heap_prop, D3D12_HEAP_FLAG_NONE,
+			&tex_resource_desc, D3D12_RESOURCE_STATE_COPY_DEST,
+			nullptr, IID_PPV_ARGS(&texture_resource)
+		);
+
+		// Budowa pomocniczego bufora wczytania tekstury do GPU
+		ComPtr<ID3D12Resource> texture_upload_buffer = nullptr;
+		
+		// - ustalenie rozmiaru tego pom. bufora
+		UINT64 RequiredSize = 0;
+		auto Desc = texture_resource.Get()->GetDesc();
+		ID3D12Device* pDevice = nullptr;
+		texture_resource.Get()->GetDevice(
+			__uuidof(*pDevice), reinterpret_cast<void**>(&pDevice)
+		);
+
+		pDevice->GetCopyableFootprints(
+			&Desc, 0, 1, 0, nullptr, nullptr, nullptr, &RequiredSize
+		);
+
+		pDevice->Release();
+		
+		// - utworzenie pom. bufora
+		D3D12_HEAP_PROPERTIES tex_upload_heap_prop = {
+			.Type = D3D12_HEAP_TYPE_UPLOAD,
+			.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+			.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+			.CreationNodeMask = 1,
+			.VisibleNodeMask = 1
+		};
+		
+		D3D12_RESOURCE_DESC tex_upload_resource_desc = {
+			.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+			.Alignment = 0,
+			.Width = RequiredSize,
+			.Height = 1,
+			.DepthOrArraySize = 1,
+			.MipLevels = 1,
+			.Format = DXGI_FORMAT_UNKNOWN,
+			.SampleDesc = {.Count = 1, .Quality = 0 },
+			.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+			.Flags = D3D12_RESOURCE_FLAG_NONE
+		};
+		
+		device->CreateCommittedResource(
+			&tex_upload_heap_prop, D3D12_HEAP_FLAG_NONE,
+			&tex_upload_resource_desc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr, IID_PPV_ARGS(&texture_upload_buffer)
+		);
+		
+		// - skopiowanie danych tekstury do pom. bufora
+		D3D12_SUBRESOURCE_DATA texture_data = {
+			.pData = bmp_bits.data(),
+			.RowPitch = bmp_width * bmp_px_size,
+			.SlicePitch = bmp_width * bmp_height * bmp_px_size
+		};
+		
+		//@TODO: jakie reset?
+		// ... ID3D12GraphicsCommandList::Reset() - to dlatego lista
+		// poleceń i obiekt stanu potoku muszą być wcześniej utworzone
+		UINT const MAX_SUBRESOURCES = 1;
+		RequiredSize = 0;
+		D3D12_PLACED_SUBRESOURCE_FOOTPRINT Layouts[MAX_SUBRESOURCES];
+		UINT NumRows[MAX_SUBRESOURCES];
+		UINT64 RowSizesInBytes[MAX_SUBRESOURCES];
+		Desc = texture_resource.Get()->GetDesc();
+		pDevice = nullptr;
+		texture_resource.Get()->GetDevice(
+			__uuidof(*pDevice), reinterpret_cast<void**>(&pDevice)
+		);
+		
+		pDevice->GetCopyableFootprints(
+			&Desc, 0, 1, 0, Layouts, NumRows, 
+			RowSizesInBytes, &RequiredSize
+		);
+		pDevice->Release();
+
+		BYTE* map_tex_data = nullptr;
+		texture_upload_buffer->Map(
+			0, nullptr, reinterpret_cast<void**>(&map_tex_data)
+		);
+		D3D12_MEMCPY_DEST DestData = {
+			.pData = map_tex_data + Layouts[0].Offset,
+			.RowPitch = Layouts[0].Footprint.RowPitch,
+			.SlicePitch = 
+				SIZE_T(Layouts[0].Footprint.RowPitch) * SIZE_T(NumRows[0])
+		};
+		for (UINT z = 0; z < Layouts[0].Footprint.Depth; ++z) {
+			auto pDestSlice =
+				static_cast<UINT8*>(DestData.pData) 
+				+ DestData.SlicePitch * z;
+			auto pSrcSlice =
+				static_cast<const UINT8*>(texture_data.pData)
+				+ texture_data.SlicePitch * LONG_PTR(z);
+			for (UINT y = 0; y < NumRows[0]; ++y) {
+				memcpy(
+				pDestSlice + DestData.RowPitch * y,
+				pSrcSlice + texture_data.RowPitch * LONG_PTR(y),
+				static_cast<SIZE_T>(RowSizesInBytes[0])
+				);
+			}
+		}
+		texture_upload_buffer->Unmap(0, nullptr);
+		
+		// -  zlecenie procesorowi GPU jego skopiowania do właściwego
+		//    zasobu tekstury
+		D3D12_TEXTURE_COPY_LOCATION Dst = {
+			.pResource = texture_resource.Get(),
+			.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+			.SubresourceIndex = 0
+		};
+		D3D12_TEXTURE_COPY_LOCATION Src = {
+			.pResource = texture_upload_buffer.Get(),
+			.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
+			.PlacedFootprint = Layouts[0]
+		};
+		commandList->CopyTextureRegion(
+			&Dst, 0, 0, 0, &Src, nullptr
+		);
+
+		D3D12_RESOURCE_BARRIER tex_upload_resource_barrier = {
+			.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION,
+			.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE,
+			.Transition = {
+				.pResource = texture_resource.Get(),
+				.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
+				.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST,
+				.StateAfter = 
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+			},
+		};
+		
+		commandList->ResourceBarrier(
+			1, &tex_upload_resource_barrier
+		);       
+		commandList->Close();
+		ID3D12CommandList* cmd_list = commandList.Get();
+		commandQueue->ExecuteCommandLists(1, &cmd_list);
+
+		// - tworzy SRV (widok zasobu shadera) dla tekstury
+		D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {
+			.Format = tex_resource_desc.Format,
+			.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
+			.Shader4ComponentMapping =
+				D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
+			.Texture2D = {
+				.MostDetailedMip = 0,
+				.MipLevels = 1,
+				.PlaneSlice = 0,
+				.ResourceMinLODClamp = 0.0f
+			},
+		};
+
+		D3D12_CPU_DESCRIPTOR_HANDLE cpu_desc_handle = 
+		// @TODO: is it cbv?
+			cbvHeap->GetCPUDescriptorHandleForHeapStart();
+		
+		cpu_desc_handle.ptr +=
+			device->GetDescriptorHandleIncrementSize(
+				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+			);
+		
+		device->CreateShaderResourceView(
+			texture_resource.Get(), &srv_desc, cpu_desc_handle 
+		);
+
+		//@TODO: jakie wait?
+
+		// ... WaitForGPU() - nie można usuwać texture_upload_buffer
+		// zanim nie skopiuje się jego zawartości
+	
+	}
 }
 
 void PopulateCommandList(HWND hwnd) {
@@ -892,7 +1094,7 @@ void InitDirect3D(HWND hwnd) {
 	DXInitAux::initSwapChain(hwnd);
 	DXInitAux::initCBVRTVHeaps();
 	DXInitAux::initCommandAllocatorAndList();
-	
+
 	DXInitAux::initDepthBuffer();
 	DXInitAux::initVsConstBufferResourceAndView();
 
@@ -901,6 +1103,9 @@ void InitDirect3D(HWND hwnd) {
 	DXInitAux::initVertexBuffer();
 
 	DXInitAux::initInstanceBuffer();
+
+	// DXInitAux::initWicFactory();
+	DXInitAux::initTextureView();
 
 	ThrowIfFailed(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
 	fenceValue = 1;
