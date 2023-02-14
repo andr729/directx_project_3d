@@ -3,7 +3,7 @@
 #include "base.h"
 
 struct Object {
-	virtual Vector2 supportFunction(Vector2 direction) const;
+	virtual Vector2 supportFunction(float angle) const;
 };
 
 bool collides(const Object&, const Object&);
