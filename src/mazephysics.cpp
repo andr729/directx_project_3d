@@ -3,7 +3,7 @@
 constexpr double PI = 3.14159265358979323846;
 
 Vector2 RectangleObj::supportFunction(float angle) const {
-	float rotation = fmod(angle - t.rotation + 4 * PI, 2 * PI);
+	float rotation = fmod(angle + t.rotation + 4 * PI, 2 * PI);
 	if (rotation < PI / 2) {
 		return Vector2{length / 2, width / 2} + t.translation;
 	}
