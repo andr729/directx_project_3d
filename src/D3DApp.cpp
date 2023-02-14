@@ -145,7 +145,7 @@ namespace player_state {
 				sin(rotY) * dx + cos(rotY) * dy
 			};
 		
-		RectangleObj player = {{new_position, 0}, 0.01, 0.01};
+		HexObj player = {{new_position}, 0.01};
 		if (obj_handler.collidesWith(player)) {
 			return;
 		}

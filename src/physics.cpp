@@ -40,7 +40,7 @@ bool collides(const Object& p, const Object& q) {
 	Vector2 initial_axis0 = {1, 0}; // arbitrary
 	Vector2 initial_axis1 = {-1, 0}; // arbitrary
 
-	Vector2 p0 = support(initial_axis0.deg());
+ 	Vector2 p0 = support(initial_axis0.deg());
 	Vector2 p1 = support(initial_axis1.deg());
 
 	Vector2 delta = p1 - p0;
