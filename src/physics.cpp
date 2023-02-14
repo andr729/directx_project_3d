@@ -79,14 +79,13 @@ bool collides(const Object& p, const Object& q) {
 
 	for (int i = 0; i < 20; i++) {
 		if (simplex.hasOrigin()) {
-
 			return true;
 		}
 		
 		Vector2 np0, np1;
 
 		// @TODO: or reverse:
-		if (isLeft(prev_p0, prev_new, {0,0})) {
+		if (!isLeft(prev_p0, prev_new, {0,0})) {
 			np0 = prev_p0;
 			np1 = prev_new;
 		}

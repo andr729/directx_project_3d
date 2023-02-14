@@ -127,9 +127,10 @@ namespace player_state {
 	void rotateUpDown(float value) {
 		rotUpDown += value;
 		
+		constexpr float pi = 3.14;
 		// @TODO:
-		if (rotUpDown < -1) rotUpDown = -1;
-		if (rotUpDown > 1) rotUpDown = 1;
+		if (rotUpDown < -pi/2) rotUpDown = -pi/2;
+		if (rotUpDown > pi/2) rotUpDown = pi/2;
 	}
 
 	void rotateY(float value) {
@@ -144,7 +145,7 @@ namespace player_state {
 				sin(rotY) * dx + cos(rotY) * dy
 			};
 		
-		RectangleObj player = {{new_position, 0}, 0.2, 0.2};
+		RectangleObj player = {{new_position, 0}, 0.01, 0.01};
 		if (obj_handler.collidesWith(player)) {
 			return;
 		}
