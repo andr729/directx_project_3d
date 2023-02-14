@@ -29,6 +29,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 			if ((GetAsyncKeyState(0x44) & 0x8000) > 0) {
 				player_state::move(-movespeed, 0);
 			}
+			if ((GetAsyncKeyState(VK_ESCAPE) & 0x8001) > 0) {
+				PostQuitMessage(0);
+			}
 			return 0;
 		case WM_PAINT:
 			OnRender(hwnd);
@@ -38,7 +41,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 			RECT rc;
 			GetWindowRect(hwnd, &rc);
 			float mid_x = (rc.right - rc.left) / 2.f, mid_y = (rc.bottom - rc.top) / 2.f;
-			float diff_x = GET_X_LPARAM(lParam) - mid_x + 8, diff_y = GET_Y_LPARAM(lParam) - mid_y + 31.5;
+			float diff_x = GET_X_LPARAM(lParam) - mid_x, diff_y = GET_Y_LPARAM(lParam) - mid_y;
 			player_state::rotateUpDown(-diff_y * 0.001);
 			player_state::rotateY(-diff_x * 0.001);
 			float set_x = mid_x + rc.left, set_y = mid_y + rc.top;
@@ -75,14 +78,17 @@ INT WINAPI wWinMain(_In_ [[maybe_unused]] HINSTANCE instance,
 
 	RegisterClassEx(&wcex);
 
+	RECT desktop;
+	GetClientRect(GetDesktopWindow(), &desktop);
+
 	HWND hwnd = CreateWindowEx(
 		0, // Optional window styles.
 		wcex.lpszClassName, // Window class
 		TEXT("Choinka"), // Window text
-		WS_OVERLAPPEDWINDOW, // Window style
+		WS_POPUP, // Window style
 
 		// Size and position
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		0, 0, desktop.right - desktop.left, desktop.bottom - desktop.top,
 
 		nullptr, // Parent window
 		nullptr, // Menu
