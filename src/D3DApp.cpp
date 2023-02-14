@@ -68,9 +68,6 @@ namespace {
 	ComPtr<ID3D12Resource> vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 
-	D3D12_DESCRIPTOR_RANGE rootDescRange;
-	D3D12_ROOT_PARAMETER rootParameter[1];
-
 	ComPtr<ID3D12Resource> vsConstBuffer;
 	
 	// Matrices are assigned dynamicly 
@@ -606,30 +603,69 @@ namespace DXInitAux {
 	}
 
 	void initRootSignature() {
-		rootDescRange = {
-			.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
-			.NumDescriptors = 1,
-			.BaseShaderRegister = 0,
-			.RegisterSpace = 0,
-			.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND,
+		D3D12_DESCRIPTOR_RANGE rootDescRange[] = {
+			{
+				.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+				.NumDescriptors = 1,
+				.BaseShaderRegister = 0,
+				.RegisterSpace = 0,
+				.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND,
+			},
+			{ 
+				.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+				.NumDescriptors = 1,
+				.BaseShaderRegister = 0,
+				.RegisterSpace = 0,
+				.OffsetInDescriptorsFromTableStart =
+				D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND
+			}
+
 		};
 
-		rootParameter[0] = {
-			.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE,
-			.DescriptorTable = { 1, &rootDescRange},	// adr. rekordu poprzedniego typu
-			.ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX,
+		D3D12_ROOT_PARAMETER rootParameter[] = {
+			{
+				.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE,
+				.DescriptorTable = { 1, &rootDescRange[0]},	// adr. rekordu poprzedniego typu
+				.ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX,
+			},
+			{
+				.ParameterType =
+				D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE,
+				.DescriptorTable = { 1, &rootDescRange[1]},
+				.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL
+			}
 		};
+
+		D3D12_STATIC_SAMPLER_DESC tex_sampler_desc = {
+			.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR,   
+				//D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_FILTER_ANISOTROPIC
+			.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP,    
+				//_MODE_MIRROR, _MODE_CLAMP, _MODE_BORDER
+			.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+			.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+			.MipLODBias = 0,
+			.MaxAnisotropy = 0,
+			.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER,
+			.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+			.MinLOD = 0.0f,
+			.MaxLOD = D3D12_FLOAT32_MAX,
+			.ShaderRegister = 0,
+			.RegisterSpace = 0,
+			.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL
+		};
+
 
 		D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {
 			.NumParameters = _countof(rootParameter),
 			.pParameters = rootParameter,
-			.NumStaticSamplers = 0,
-			.pStaticSamplers = nullptr,
+			.NumStaticSamplers = 1,
+			.pStaticSamplers = &tex_sampler_desc,
 			.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 					D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 					D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-					D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-					D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS,
+					D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS
+					// | D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS
+					,
 		};
 
 		ComPtr<ID3DBlob> signature;
