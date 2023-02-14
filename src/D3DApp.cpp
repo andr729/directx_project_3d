@@ -144,7 +144,7 @@ namespace player_state {
 				sin(rotY) * dx + cos(rotY) * dy
 			};
 		
-		CircObj player = {new_position, 10};
+		RectangleObj player = {{new_position, 0}, 0.2, 0.2};
 		if (obj_handler.collidesWith(player)) {
 			return;
 		}

@@ -44,8 +44,8 @@ bool collides(const Object& p, const Object& q) {
 	Vector2 p2;
 	Vector2 initial_axis2;
 
-	Vector2 initial_axis2_guess1 = delta.rot90();
-	Vector2 initial_axis2_guess2 = delta.rot270();
+	Vector2 initial_axis2_guess1 = delta.rot270();
+	Vector2 initial_axis2_guess2 = delta.rot90();
 
 	auto deg1 = initial_axis2_guess1.deg();
 	auto deg2 = initial_axis2_guess2.deg();
@@ -74,7 +74,7 @@ bool collides(const Object& p, const Object& q) {
 	Vector2 prev_new = p2;
 	Vector2 prev_dir = initial_axis2;
 
-	while (true) {
+	for (int i = 0; i < 20; i++) {
 		if (simplex.hasOrigin()) return true;
 		
 		Vector2 np0, np1;
@@ -89,7 +89,7 @@ bool collides(const Object& p, const Object& q) {
 			np1 = prev_p1;
 		}
 
-		Vector2 dir = (np1 - np0).rot90();
+		Vector2 dir = (np1 - np0).rot270();
 
 		auto new_point = support(dir.deg());
 
@@ -100,6 +100,7 @@ bool collides(const Object& p, const Object& q) {
 		prev_p0 = np0;
 		prev_p1 = np1;
 	}
+	return false;
 }
 
 Vector2 CircObj::supportFunction(float deg) const {
