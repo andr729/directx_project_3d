@@ -17,19 +17,19 @@ Vector2 RectangleObj::supportFunction(float angle) const {
 }
 
 Vector2 HexObj::supportFunction(float angle) const {
-	if (rotation < PI / 3) {
+	if (angle < PI / 3) {
 		return Vector2{0, width} + t.translation;
 	}
-	if (rotation < 2 * PI / 3) {
+	if (angle < 2 * PI / 3) {
 		return Vector2{sqrtf(3) * width, width / 2} + t.translation;
 	}
-	if (rotation < 3 * PI / 3) {
+	if (angle < 3 * PI / 3) {
 		return Vector2{sqrtf(3) * width, -width / 2} + t.translation;
 	}
-	if (rotation < 4 * PI / 3) {
+	if (angle < 4 * PI / 3) {
 		return Vector2{0, -width} + t.translation;
 	}
-	if (rotation < 5 * PI / 3) {
+	if (angle < 5 * PI / 3) {
 		return Vector2{-sqrtf(3) * width, -width / 2} + t.translation;
 	}
 	return Vector2{-sqrtf(3) * width, width / 2} + t.translation;

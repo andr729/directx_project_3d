@@ -29,6 +29,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 			if ((GetAsyncKeyState(0x44) & 0x8000) > 0) {
 				player_state::move(-movespeed, 0);
 			}
+			if ((GetAsyncKeyState(VK_SPACE) & 0x8000) > 0) {
+				player_state::moveUp(-movespeed);
+			}
+			if ((GetAsyncKeyState(VK_LSHIFT) & 0x8000) > 0) {
+				player_state::moveUp(movespeed);
+			}
+
 			if ((GetAsyncKeyState(VK_ESCAPE) & 0x8001) > 0) {
 				PostQuitMessage(0);
 			}
