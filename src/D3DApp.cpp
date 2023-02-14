@@ -145,7 +145,7 @@ namespace player_state {
 			};
 		
 		CircObj player = {new_position, 10};
-		if (obj_handler.collidesWith(&player)) {
+		if (obj_handler.collidesWith(player)) {
 			return;
 		}
 
