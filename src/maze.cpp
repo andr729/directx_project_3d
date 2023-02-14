@@ -8,11 +8,10 @@ struct SimpleColor {
 	float r, g, b;
 };
 
-struct SimpleVertex {
+struct Vector3 {
 	float x;
 	float y;
 	float z;
-	SimpleColor color;
 };
 
 struct Triangle {
@@ -21,7 +20,11 @@ struct Triangle {
 
 SimpleColor color = {1.0f, 1.0f, 1.0f};
 
-constexpr Triangle makeSingleTriangle(SimpleVertex p1, SimpleVertex p2, SimpleVertex p3) {
+constexpr float textureCoords(Vector3 v, Vector3 texture_offset, Vector3 base) {
+	return (v.x - texture_offset.x) * base.x + (v.y - texture_offset.y) * base.y + (v.z - texture_offset.z) * base.z;
+}
+
+constexpr Triangle makeSingleTriangle(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 texture_offset, Vector3 basex, Vector3 basey) {
 	float Ax = p2.x - p1.x;
 	float Ay = p2.y - p1.y;
 	float Az = p2.z - p1.z;
@@ -33,25 +36,24 @@ constexpr Triangle makeSingleTriangle(SimpleVertex p1, SimpleVertex p2, SimpleVe
 	float Nx = Ay * Bz - Az * By;
 	float Ny = Az * Bx - Ax * Bz;
 	float Nz = Ax * By - Ay * Bx;
-
-
+	
 	return { {
-		{p1.x, p1.y, p1.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,   0.1, 0.3},
-		{p2.x, p2.y, p2.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,   0.0, 0.0},
-		{p3.x, p3.y, p3.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,   0.2, 0.7},
+		{p1.x, p1.y, p1.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,   textureCoords(p1, texture_offset, basex), textureCoords(p1, texture_offset, basey)},
+		{p2.x, p2.y, p2.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,   textureCoords(p2, texture_offset, basex), textureCoords(p2, texture_offset, basey)},
+		{p3.x, p3.y, p3.z,     Nx, Ny, Nz,    color.r, color.g, color.b, 1.0f,   textureCoords(p3, texture_offset, basex), textureCoords(p3, texture_offset, basey)},
 	} };
 }
 
-std::vector<Triangle> makeConvexShape(std::vector<SimpleVertex> p) {
+std::vector<Triangle> makeConvexShape(std::vector<Vector3> p, Vector3 texture_offset, Vector3 basex, Vector3 basey) {
 	std::vector<Triangle> res;
 	for (int i = 1; i < p.size() - 1; i++) {
-		res.push_back(makeSingleTriangle(p[0], p[i], p[i + 1]));
+		res.push_back(makeSingleTriangle(p[0], p[i], p[i + 1], texture_offset, basex, basey));
 	}
 	return res;
 }
 
-SimpleVertex rotateXZ(SimpleVertex v, float angle) {
-	SimpleVertex res;
+Vector3 rotateXZ(Vector3 v, float angle) {
+	Vector3 res;
 	res.y = v.y;
 	res.x = cos(angle) * v.x - sin(angle) * v.z;
 	res.z = sin(angle) * v.x + cos(angle) * v.z;
@@ -93,10 +95,11 @@ void Union(std::pair<int, int> x, std::pair<int, int> y, std::map<std::pair<int,
 }
 
 Maze getMaze(float length, float width, float height, int side_edges, int seed) {
+	float texturevec = 1 / std::max(std::max(height, length), 2 * width);
 	Maze res;
 	// Cuboid
 	std::vector<Triangle> cuboid;
-	SimpleVertex cuboid_verticies[8];
+	Vector3 cuboid_verticies[8];
 	for (int h = 0; h <= 1; h++) {
 		for (int w = 0; w <= 1; w++) {
 			for (int l = 0; l <= 1; l++) {
@@ -106,22 +109,22 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 	}
 	std::vector<Triangle> temp;
 	// top
-	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[6], cuboid_verticies[7], cuboid_verticies[5]});
+	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[6], cuboid_verticies[7], cuboid_verticies[5]}, cuboid_verticies[4], {texturevec, 0, 0}, {0, 0, texturevec});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// right
-	temp = makeConvexShape({cuboid_verticies[5], cuboid_verticies[7], cuboid_verticies[3], cuboid_verticies[1]});
+	temp = makeConvexShape({cuboid_verticies[5], cuboid_verticies[7], cuboid_verticies[3], cuboid_verticies[1]}, cuboid_verticies[1], {0, 0, texturevec}, {0, texturevec, 0});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// front
-	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[5], cuboid_verticies[1], cuboid_verticies[0]});
+	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[5], cuboid_verticies[1], cuboid_verticies[0]}, cuboid_verticies[0], {texturevec, 0, 0}, {0, texturevec, 0});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// bottom
-	temp = makeConvexShape({cuboid_verticies[0], cuboid_verticies[1], cuboid_verticies[3], cuboid_verticies[2]});
+	temp = makeConvexShape({cuboid_verticies[0], cuboid_verticies[1], cuboid_verticies[3], cuboid_verticies[2]}, cuboid_verticies[3], {texturevec, 0, 0}, {0, 0, texturevec});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// left
-	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[0], cuboid_verticies[2], cuboid_verticies[6]});
+	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[0], cuboid_verticies[2], cuboid_verticies[6]}, cuboid_verticies[2], {0, 0, texturevec}, {0, texturevec, 0});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// back
-	temp = makeConvexShape({cuboid_verticies[2], cuboid_verticies[3], cuboid_verticies[7], cuboid_verticies[6]});
+	temp = makeConvexShape({cuboid_verticies[2], cuboid_verticies[3], cuboid_verticies[7], cuboid_verticies[6]}, cuboid_verticies[3], {texturevec, 0, 0}, {0, texturevec});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	for (int i = 0; i < cuboid.size(); i++) {
 		res.cuboid[i * 3] = cuboid[i].t1[0];
@@ -131,7 +134,7 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 
 	// HexPrism
 	std::vector<Triangle> hexprism;
-	SimpleVertex hexprism_verticies[12];
+	Vector3 hexprism_verticies[12];
 	hexprism_verticies[0] = {0, 0, width};
 	for (int i = 1; i < 6; i++) {
 		hexprism_verticies[i] = rotateXZ(hexprism_verticies[0], 2 * PI * i / 6);
@@ -141,13 +144,15 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 		hexprism_verticies[i].y = height;
 	}
 	// top
-	temp = makeConvexShape({hexprism_verticies[0], hexprism_verticies[1], hexprism_verticies[2],hexprism_verticies[3],hexprism_verticies[4],hexprism_verticies[5]});
+	temp = makeConvexShape({hexprism_verticies[0], hexprism_verticies[1], hexprism_verticies[2],hexprism_verticies[3],hexprism_verticies[4],hexprism_verticies[5]}, {hexprism_verticies[0].x - width, hexprism_verticies[0].y, hexprism_verticies[0].z - 2 * width}, {texturevec, 0, 0}, {0, 0, texturevec});
 	hexprism.insert(hexprism.end(), temp.begin(), temp.end());
 	// bottom
-	temp = makeConvexShape({hexprism_verticies[11], hexprism_verticies[10], hexprism_verticies[9],hexprism_verticies[8],hexprism_verticies[7],hexprism_verticies[6]});
+	temp = makeConvexShape({hexprism_verticies[11], hexprism_verticies[10], hexprism_verticies[9],hexprism_verticies[8],hexprism_verticies[7],hexprism_verticies[6]}, {hexprism_verticies[6].x - width, hexprism_verticies[6].y, hexprism_verticies[6].z - 2 * width}, {texturevec, 0, 0}, {0, 0, texturevec});
 	hexprism.insert(hexprism.end(), temp.begin(), temp.end());
+	float z_impact[6] = {0.5, 1, 0.5, -0.5, -1, -0.5};
+	float x_impact[6] = {-sqrt(3)/2, 0, sqrt(3) / 2, sqrt(3) / 2, 0, -sqrt(3) / 2};
 	for (int i = 0; i < 6; i++) {
-		temp = makeConvexShape({hexprism_verticies[i], hexprism_verticies[i + 6], hexprism_verticies[((i + 1) % 6) + 6], hexprism_verticies[(i + 1) % 6]});
+		temp = makeConvexShape({hexprism_verticies[i], hexprism_verticies[i + 6], hexprism_verticies[((i + 1) % 6) + 6], hexprism_verticies[(i + 1) % 6]}, hexprism_verticies[(i + 1) % 6], {texturevec * x_impact[i], 0, texturevec * z_impact[i]}, {0, texturevec, 0});
 		hexprism.insert(hexprism.end(), temp.begin(), temp.end());
 	}
 	for (int i = 0; i < hexprism.size(); i++) {
