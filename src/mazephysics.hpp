@@ -11,6 +11,8 @@ struct RectangleObj: public Object {
 		t(t), length(length), width(width) {}
 	
 	Vector2 supportFunction(float angle) const override;
+
+	ObjectType type() const override { return ObjectType::Rect; };
 };
 
 struct HexObj: public Object {
@@ -20,4 +22,7 @@ struct HexObj: public Object {
 		t(t), width(width) {}
 
 	Vector2 supportFunction(float angle) const override;
+	ObjectType type() const override { return ObjectType::Hex; };
 };
+
+

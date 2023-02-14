@@ -308,7 +308,7 @@ namespace DXInitAux {
 	}
 
 	void initWicFactory() {
-		// @TODO: this does not work for some reason
+		CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 		ThrowIfFailed(CoCreateInstance(
 			CLSID_WICImagingFactory,
 			nullptr,
@@ -1149,8 +1149,6 @@ void InitDirect3D(HWND hwnd) {
 
 	DXInitAux::initInstanceBuffer();
 
-	// DXInitAux::initWicFactory();
-
 	ThrowIfFailed(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
 	fenceValue = 1;
 
@@ -1170,6 +1168,8 @@ void InitDirect3D(HWND hwnd) {
 	WaitForPreviousFrame(hwnd);
 
 	DXInitAux::initTextureView(hwnd);
+
+	DXInitAux::initWicFactory();
 }
 
 void OnUpdate(HWND hwnd) {

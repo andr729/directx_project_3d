@@ -76,6 +76,14 @@ struct Vector2 {
 		return {y, -x};
 	}
 
+	Vector2 rot(float angle) const {
+		float c = std::cos(angle);
+		float s = std::sin(angle);
+		float rx = c*x - s*y; 
+		float ry = s*x + c*y;
+		return {rx, ry};
+	}
+
 	float deg() const {
 		auto rx = y;
 		auto ry = x;

@@ -1,5 +1,8 @@
 #include "physics.hpp"
+#include "mazephysics.hpp"
 #include <utility>
+#include <cassert>
+
 
 float dot(Vector2 v1, Vector2 v2) {
 	return v1.x * v2.x + v1.y * v2.y;
@@ -32,85 +35,108 @@ bool isLeft(Vector2 a, Vector2 b, Vector2 c){
 }
 
 bool collides(const Object& p, const Object& q) {
+	assert(q.type() == ObjectType::Hex);
+	const HexObj& qh = dynamic_cast<const HexObj&>(q);
+
+	if (p.type() == ObjectType::Hex) {
+		const HexObj& ph = dynamic_cast<const HexObj&>(p);
+
+		float r = ph.width + qh.width;
+
+		return (ph.t.translation - qh.t.translation).abs2() <= r*r;
+	}
+
+	if (p.type() == ObjectType::Rect) {
+		const RectangleObj& pr = dynamic_cast<const RectangleObj&>(p);
+
+		Vector2 rect = (pr.t.translation - qh.t.translation).rot(-pr.t.rotation);
+		Vector2 circle = {0, 0};
+
+		float rect_w = pr.width * 2;
+		float rect_h = pr.length * 2;
+		float c_r = qh.width;
+
+		Vector2 circleDistance = {std::abs(circle.x - rect.x), std::abs(circle.y - rect.y)};
+
+		if (circleDistance.x > (rect_w/2 + c_r)) { return false; }
+		if (circleDistance.y > (rect_h/2 + c_r)) { return false; }
+
+		if (circleDistance.x <= (rect_w/2)) { return true; } 
+		if (circleDistance.y <= (rect_h/2)) { return true; }
+
+		float au1 = (circleDistance.x - rect_w/2);
+		float au2 = (circleDistance.y - rect_h/2);
+		float cornerDistance_sq = au1*au1 + au2*au2;
+		return (cornerDistance_sq <= (c_r * c_r));
+	}
+
+	return false;
+
 	// q - player
 	// p - kolizja z
 
-	#define support(axis) p.supportFunction((axis)) - q.supportFunction(-(axis));
+	// #define support(axis) p.supportFunction((axis)) - q.supportFunction(-(axis));
 
-	Vector2 initial_axis0 = {1, 0}; // arbitrary
-	Vector2 initial_axis1 = {-1, 0}; // arbitrary
+	// Vector2 initial_axis0 = {1, 0}; // arbitrary
+	// Vector2 initial_axis1 = {-1, 0}; // arbitrary
 
- 	Vector2 p0 = support(initial_axis0.deg());
-	Vector2 p1 = support(initial_axis1.deg());
+ 	// Vector2 p0 = support(initial_axis0.deg());
+	// Vector2 p1 = support(initial_axis1.deg());
+	// Vector2 delta = p1 - p0;
 
-	Vector2 delta = p1 - p0;
-	Vector2 p2;
-	Vector2 initial_axis2;
+	// Vector2 p2;
+	// Vector2 initial_axis2;
 
-	Vector2 initial_axis2_guess1 = delta.rot270();
-	Vector2 initial_axis2_guess2 = (-delta).rot270();
+	// if (isLeft(p0, p1, {0,0})) {
+	// 	initial_axis2 = delta.rot270();
+	// 	p2 = support(delta.rot270().deg());
+	// }
+	// else {
+	// 	initial_axis2 = delta.rot90();
+	// 	p2 = support(delta.rot90().deg());
+	// }
 
-	auto deg1 = initial_axis2_guess1.deg();
-	auto deg2 = initial_axis2_guess2.deg();
-	Vector2 p2_guess1 = support(deg1);
-	Vector2 p2_guess2 = support(deg2);
-
-	if (dot(p2_guess1, initial_axis2_guess1) > 0) {
-		p2 = p2_guess1;
-		initial_axis2 = initial_axis2_guess1;
-	}
-	else if (dot(p2_guess2, initial_axis2_guess2) > 0) {
-		p2 = p2_guess2;
-		initial_axis2 = initial_axis2_guess2;
-
-		// @TODO: here or up:
-		std::swap(p0, p1);
-	}
-	else {
-		return false;
-	}
-
-	Triangle simplex = {p0, p1, p2};
+	// Triangle simplex = {p0, p1, p2};
 	
-	Vector2 prev_p0 = p0;
-	Vector2 prev_p1 = p1;
-	Vector2 prev_new = p2;
-	Vector2 prev_dir = initial_axis2;
+	// Vector2 prev_p0 = p0;
+	// Vector2 prev_p1 = p1;
+	// Vector2 prev_new = p2;
+	// Vector2 prev_dir = initial_axis2;
 
-	for (int i = 0; i < 20; i++) {
-		if (simplex.hasOrigin()) {
-			return true;
-		}
+	// for (int i = 0; i < 20; i++) {
+	// 	if (simplex.hasOrigin()) {
+	// 		return true;
+	// 	}
 		
-		Vector2 np0, np1;
+	// 	Vector2 np0, np1;
 
-		// @TODO: or reverse:
-		if (!isLeft(prev_p0, prev_new, {0,0})) {
-			np0 = prev_p0;
-			np1 = prev_new;
-		}
-		else {
-			np0 = prev_new;
-			np1 = prev_p1;
-		}
+	// 	// @TODO: or reverse:
+	// 	if (!isLeft(prev_p0, prev_new, {0,0})) {
+	// 		np0 = prev_p0;
+	// 		np1 = prev_new;
+	// 	}
+	// 	else {
+	// 		np0 = prev_new;
+	// 		np1 = prev_p1;
+	// 	}
 
-		Vector2 dir = (np1 - np0).rot270();
+	// 	Vector2 dir = (np1 - np0).rot270();
 
-		auto new_point = support(dir.deg());
+	// 	auto new_point = support(dir.deg());
 
-		if (dot(new_point, dir) < 0) return false;
+	// 	if (dot(new_point, dir) < 0) return false;
 
-		simplex = {np0, np1, new_point};
-		prev_new = new_point;
-		prev_p0 = np0;
-		prev_p1 = np1;
-	}
-	return false;
+	// 	simplex = {np0, np1, new_point};
+	// 	prev_new = new_point;
+	// 	prev_p0 = np0;
+	// 	prev_p1 = np1;
+	// }
+	// return false;
 }
 
-Vector2 CircObj::supportFunction(float deg) const {
-	return Vector2{sin(deg), cos(deg)} * rad + pos;
-}
+// Vector2 CircObj::supportFunction(float deg) const {
+// 	return Vector2{sin(deg), cos(deg)} * rad + pos;
+// }
 
 
 void ObjectHandler::addObject(Object* obj) {
