@@ -116,6 +116,7 @@ namespace {
 
 namespace player_state {
 	Vector2 position = {0, 0};
+	float height = 0;
 	float rotY = 0;
 	float rotUpDown = 0;
 
@@ -134,6 +135,12 @@ namespace player_state {
 
 	void move(float dx, float dy) {
 		position += {cos(rotY) * dx - sin(rotY) * dy, sin(rotY) * dx + cos(rotY) * dy};
+	}
+
+	void moveUp(float dz) {
+		height += dz;
+		height = min(height, 0);
+		height = max(height, -10); 
 	}
 };
 
@@ -228,7 +235,7 @@ void calcNewMatrix() {
 	// player stuff:
 	wvp_matrix = XMMatrixMultiply(
 		wvp_matrix,
-		XMMatrixTranslation(player_state::position.x, -1, player_state::position.y)
+		XMMatrixTranslation(player_state::position.x, player_state::height, player_state::position.y)
 	);
 
 	wvp_matrix = XMMatrixMultiply(
