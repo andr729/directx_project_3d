@@ -41,6 +41,6 @@ add_executable (Window ${SOURCE_FILES})
 target_link_libraries(Window ${DIRECT3D})
 target_link_libraries(Window ${DXGI})
 
-add_dependencies(HLSL_Shaders Window)
+add_dependencies(Window HLSL_Shaders)
 
 
