@@ -5,7 +5,7 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 	try {
-		const float movespeed = 0.05;
+		const float movespeed = 0.001;
 		switch (Msg) {
 		case WM_CREATE:
 			SetTimer(hwnd, 200, 10, nullptr);
@@ -18,22 +18,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 			OnUpdate(hwnd);
 			InvalidateRect(hwnd, nullptr, true);
 			if ((GetAsyncKeyState(0x57) & 0x8000) > 0) {
-				player_state::move(0,-movespeed);
+				player_state::move(0,movespeed);
 			}
 			if ((GetAsyncKeyState(0x41) & 0x8000) > 0) {
-				player_state::move(movespeed, 0);
-			}
-			if ((GetAsyncKeyState(0x53) & 0x8000) > 0) {
-				player_state::move(0, movespeed);
-			}
-			if ((GetAsyncKeyState(0x44) & 0x8000) > 0) {
 				player_state::move(-movespeed, 0);
 			}
+			if ((GetAsyncKeyState(0x53) & 0x8000) > 0) {
+				player_state::move(0, -movespeed);
+			}
+			if ((GetAsyncKeyState(0x44) & 0x8000) > 0) {
+				player_state::move(movespeed, 0);
+			}
 			if ((GetAsyncKeyState(VK_SPACE) & 0x8000) > 0) {
-				player_state::moveUp(-movespeed);
+				player_state::moveUp(movespeed);
 			}
 			if ((GetAsyncKeyState(VK_LSHIFT) & 0x8000) > 0) {
-				player_state::moveUp(movespeed);
+				player_state::moveUp(-movespeed);
 			}
 
 			if ((GetAsyncKeyState(VK_ESCAPE) & 0x8001) > 0) {

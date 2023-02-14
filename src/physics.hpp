@@ -20,7 +20,7 @@ class ObjectHandler {
 	std::vector<Object*> objects;
 public:
 	void addObject(Object*);
-	bool collidesWith(const Object&);
+	bool collidesWith(const Object&) const;
 };
 
 
