@@ -9,8 +9,8 @@ Texture2D texture_ps;
 SamplerState sampler_ps;
 
 float4 main(ps_input_t input) : SV_TARGET {
-	static const float far_dist = 10;
-	static const float near_dist = 5;
+	static const float far_dist = 30;
+	static const float near_dist = 10;
 
 	static const float coeff = 1 / (near_dist - far_dist);
 	static const float offset = far_dist / (far_dist - near_dist);
