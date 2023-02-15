@@ -159,7 +159,7 @@ namespace player_state {
 	void moveUp(float dz) {
 		height += dz;
 		height = min(height, 10);
-		height = max(height, -10); 
+		height = max(height, 0.1); 
 	}
 };
 
