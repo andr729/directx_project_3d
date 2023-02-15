@@ -108,7 +108,7 @@ namespace {
 	size_t HEXPRISM_INSTANCE_DATA_START;
 	size_t FLOOR_INSTANCE_DATA_START;
 
-	constinit size_t const MAX_NUM_INSTANCES = 2048;
+	constinit size_t const MAX_NUM_INSTANCES = 65536;
 	XMFLOAT4X4 instance_matrices[MAX_NUM_INSTANCES];
 	
 	constinit const size_t INSTANCE_BUFFER_SIZE = sizeof(instance_matrices);
@@ -164,10 +164,10 @@ namespace player_state {
 };
 
 void initTriangleAndInstanceData() {
-	const float length = 1;
-	const float width = .1;
-	const float height = .2;
-	const int side_edges = 1;
+	const float length = 2;
+	const float width = .2;
+	const float height = .5;
+	const int side_edges = 30;
 
 	auto maze = getMaze(length, width, height, side_edges, 1);
 
