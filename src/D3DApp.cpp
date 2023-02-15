@@ -87,9 +87,10 @@ namespace {
 	HeapType depthBufferHeap;
 
 	
-	constexpr size_t VERTEX_COUNT = CUBOID_VERTEX_COUNT + HEXPRISM_VERTEX_COUNT;
+	constexpr size_t VERTEX_COUNT = CUBOID_VERTEX_COUNT + HEXPRISM_VERTEX_COUNT + FLOOR_VERTEX_COUNT;
 	constexpr size_t CUBOID_START_POSITION = 0;
 	constexpr size_t HEXPRISM_START_POSITION = CUBOID_VERTEX_COUNT;
+	constexpr size_t FLOOR_START_POSITION = CUBOID_VERTEX_COUNT + HEXPRISM_VERTEX_COUNT;
 	static_assert(VERTEX_COUNT % 3 == 0);
 
 	constexpr size_t NUM_TRIANGLES = VERTEX_COUNT / 3;
@@ -101,9 +102,11 @@ namespace {
 
 	size_t NUM_HEXPRISM_INSTANCES;
 	size_t NUM_CUBOID_INSTANCES;
+	constexpr size_t NUM_FLOOR_INSTANCES = 1;
 
 	size_t CUBOID_INSTANCE_DATA_START;
 	size_t HEXPRISM_INSTANCE_DATA_START;
+	size_t FLOOR_INSTANCE_DATA_START;
 
 	constinit size_t const MAX_NUM_INSTANCES = 2048;
 	XMFLOAT4X4 instance_matrices[MAX_NUM_INSTANCES];
@@ -156,7 +159,7 @@ namespace player_state {
 	void moveUp(float dz) {
 		height += dz;
 		height = min(height, 10);
-		height = max(height, 0); 
+		height = max(height, -10); 
 	}
 };
 
@@ -176,13 +179,17 @@ void initTriangleAndInstanceData() {
 	for(int i = 0; i < HEXPRISM_VERTEX_COUNT; i++)
 		triangle_data[i + HEXPRISM_START_POSITION] = maze.hexprism[i];
 
+	for(int i = 0; i < FLOOR_VERTEX_COUNT; i++)
+		triangle_data[i + FLOOR_START_POSITION] = maze.floor[i];
+
 	NUM_CUBOID_INSTANCES = maze.transformations_cuboid.size();
 	NUM_HEXPRISM_INSTANCES = maze.transformations_hexprism.size();
 
 	CUBOID_INSTANCE_DATA_START = 0;
 	HEXPRISM_INSTANCE_DATA_START = NUM_CUBOID_INSTANCES;
+	FLOOR_INSTANCE_DATA_START = NUM_CUBOID_INSTANCES + NUM_HEXPRISM_INSTANCES;
 
-	assert(NUM_CUBOID_INSTANCES + NUM_HEXPRISM_INSTANCES < MAX_NUM_INSTANCES);
+	assert(NUM_CUBOID_INSTANCES + NUM_HEXPRISM_INSTANCES + NUM_FLOOR_INSTANCES < MAX_NUM_INSTANCES);
 
 	for (size_t k = 0;
 			k < NUM_CUBOID_INSTANCES;
@@ -208,6 +215,11 @@ void initTriangleAndInstanceData() {
 			XMMatrixTranslation(trn.translation.x, 0, trn.translation.y)
 		);
 	}
+
+	XMStoreFloat4x4(
+		&instance_matrices[FLOOR_INSTANCE_DATA_START],
+		XMMatrixIdentity()
+	);
 
 
 	// Making objects:
@@ -1093,6 +1105,13 @@ void PopulateCommandList(HWND hwnd) {
 		NUM_HEXPRISM_INSTANCES, 
 		HEXPRISM_START_POSITION, 
 		HEXPRISM_INSTANCE_DATA_START
+	);
+
+	commandList->DrawInstanced(
+		FLOOR_VERTEX_COUNT,
+		NUM_FLOOR_INSTANCES,
+		FLOOR_START_POSITION,
+		FLOOR_INSTANCE_DATA_START
 	);
 
 	D3D12_RESOURCE_BARRIER barrier2 = {
