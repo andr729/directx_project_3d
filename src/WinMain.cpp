@@ -1,5 +1,5 @@
-#include "WinMain.h"
-#include "D3DApp.h"
+#include "WinMain.hpp"
+#include "D3DApp.hpp"
 #include <windowsx.h>
 #include <cstdlib>
 

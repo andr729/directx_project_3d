@@ -1,7 +1,7 @@
 #pragma once
 
 #include "physics.hpp"
-#include "maze.h"
+#include "maze.hpp"
 
 struct RectangleObj: public Object {
 	CuboidTransformation t;

@@ -7,11 +7,11 @@
 #include <cmath>
 #include <exception>
 #include <stdexcept>
-#include "D3DApp.h"
+#include "D3DApp.hpp"
 #include "vertex_shader.h",
 #include "pixel_shader.h".
-#include "base.h"
-#include "maze.h"
+#include "base.hpp"
+#include "maze.hpp"
 #include "mazephysics.hpp"
 #include "global_state.hpp"
 #include "bitmap.hpp"

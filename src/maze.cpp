@@ -1,4 +1,4 @@
-#include "maze.h"
+#include "maze.hpp"
 
 #include <random>
 #include <map>
