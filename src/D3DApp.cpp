@@ -204,6 +204,10 @@ void initTriangleAndInstanceData() {
 		assert(maze_vertex.tex_coord[0] >= 0 && maze_vertex.tex_coord[0] <= 1);
 		assert(maze_vertex.tex_coord[1] >= 0 && maze_vertex.tex_coord[1] <= 1);
 		maze_vertex.tex_coord[0] *= brick_d / full_d;
+
+		float val = 1 - 1/full_d;
+		if (maze_vertex.tex_coord[0] > val) maze_vertex.tex_coord[0] = val;
+
 		assert(maze_vertex.tex_coord[0] >= 0 && maze_vertex.tex_coord[0] <= 1);
 		assert(maze_vertex.tex_coord[1] >= 0 && maze_vertex.tex_coord[1] <= 1);
 	}
