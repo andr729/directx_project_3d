@@ -1,6 +1,7 @@
 #pragma once
-#include <vector>
+
 #include "base.h"
+#include <vector>
 
 constexpr int CUBOID_VERTEX_COUNT = 3 * 6 * 2;
 constexpr int HEXPRISM_VERTEX_COUNT = 3 * (2 * 4 + 6 * 2);

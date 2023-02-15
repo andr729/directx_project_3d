@@ -1,4 +1,5 @@
 #include "maze.h"
+
 #include <random>
 #include <map>
 
