@@ -102,7 +102,7 @@ namespace {
 
 	size_t NUM_HEXPRISM_INSTANCES;
 	size_t NUM_CUBOID_INSTANCES;
-	constexpr size_t NUM_FLOOR_INSTANCES = 1;
+	size_t NUM_FLOOR_INSTANCES;
 
 	size_t CUBOID_INSTANCE_DATA_START;
 	size_t HEXPRISM_INSTANCE_DATA_START;
@@ -184,6 +184,7 @@ void initTriangleAndInstanceData() {
 
 	NUM_CUBOID_INSTANCES = maze.transformations_cuboid.size();
 	NUM_HEXPRISM_INSTANCES = maze.transformations_hexprism.size();
+	NUM_FLOOR_INSTANCES = maze.transformations_floor.size();
 
 	CUBOID_INSTANCE_DATA_START = 0;
 	HEXPRISM_INSTANCE_DATA_START = NUM_CUBOID_INSTANCES;
@@ -216,10 +217,15 @@ void initTriangleAndInstanceData() {
 		);
 	}
 
-	XMStoreFloat4x4(
-		&instance_matrices[FLOOR_INSTANCE_DATA_START],
-		XMMatrixIdentity()
-	);
+	for (size_t k = 0;
+			k < NUM_FLOOR_INSTANCES;
+			++k) {
+		auto& trn = maze.transformations_floor[k];
+		XMStoreFloat4x4(
+			&instance_matrices[k + FLOOR_INSTANCE_DATA_START],
+			XMMatrixTranslation(trn.translation.x, 0, trn.translation.y)
+		);
+	}
 
 
 	// Making objects:
