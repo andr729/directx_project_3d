@@ -188,11 +188,13 @@ void initTriangleAndInstanceData() {
 		
 		float val = 1 - 1/full_d;
 		float val_s = brick_d / full_d + 1/full_d;
+		// float val_s2 = 1/full_h;
 
-		if (floor_vertex.tex_coord[0] > val) floor_vertex.tex_coord[0] = val;
-		if (floor_vertex.tex_coord[1] > val) floor_vertex.tex_coord[1] = val;
+		// if (floor_vertex.tex_coord[0] > val) floor_vertex.tex_coord[0] = val;
+		// if (floor_vertex.tex_coord[1] > val) floor_vertex.tex_coord[1] = val;
 
 		if (floor_vertex.tex_coord[0] < val_s) floor_vertex.tex_coord[0] = val_s;
+		// if (floor_vertex.tex_coord[1] < val_s2) floor_vertex.tex_coord[1] = val_s2;
 		
 		// assert(floor_vertex.tex_coord[0] >= 0 && floor_vertex.tex_coord[0] <= 1);
 		// assert(floor_vertex.tex_coord[1] >= 0 && floor_vertex.tex_coord[1] <= 1);
@@ -737,10 +739,10 @@ namespace DXInitAux {
 		D3D12_STATIC_SAMPLER_DESC tex_sampler_desc = {
 			.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR,   
 				//D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_FILTER_ANISOTROPIC
-			.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+			.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
 				//_MODE_MIRROR, _MODE_CLAMP, _MODE_BORDER
-			.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
-			.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+			.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+			.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
 			.MipLODBias = 0,
 			.MaxAnisotropy = 0,
 			.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER,
