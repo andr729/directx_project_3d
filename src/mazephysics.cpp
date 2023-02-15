@@ -1,7 +1,5 @@
 #include "mazephysics.hpp"
 
-constexpr double PI = 3.14159265358979323846;
-
 Vector2 RectangleObj::supportFunction(float angle) const {
 	float rotation = fmod(angle - t.rotation + 4 * PI, 2 * PI);
 

@@ -16,6 +16,9 @@
 #include "global_state.hpp"
 #include "bitmap.hpp"
 
+#undef max
+#undef min
+
 using DirectX::XMFLOAT4X4;
 using DirectX::XMFLOAT4;
 using DirectX::XMMATRIX;
@@ -130,10 +133,8 @@ namespace player_state {
 	void rotateUpDown(float value) {
 		rotUpDown += value;
 		
-		constexpr float pi = 3.14;
-		// @TODO:
-		if (rotUpDown < -pi/2) rotUpDown = -pi/2;
-		if (rotUpDown > pi/2) rotUpDown = pi/2;
+		if (rotUpDown < -PI/2) rotUpDown = -PI/2;
+		if (rotUpDown > PI/2) rotUpDown = PI/2;
 	}
 
 	void rotateY(float value) {
@@ -158,8 +159,8 @@ namespace player_state {
 
 	void moveUp(float dz) {
 		height += dz;
-		height = min(height, 10);
-		height = max(height, 0.1); 
+		height = std::min(height, 10.f);
+		height = std::max(height, 0.1f); 
 	}
 };
 
@@ -176,8 +177,6 @@ void initTriangleAndInstanceData() {
 	double grass_d = 512;
 	double full_d = brick_d + grass_d;
 	double full_h = 640;
-
-	// double eff_grass_d = 512;
 	
 	for (auto& floor_vertex : maze.floor) {
 		assert(floor_vertex.tex_coord[0] >= 0 && floor_vertex.tex_coord[0] <= 1);
@@ -296,11 +295,6 @@ void copyTriangleDataToVertexBuffer() {
 }
 
 void calcNewMatrix() {
-
-	// XMStoreFloat4x4(
-	// 	&vsConstBufferData.matWorldView,
-	// 	XMMatrixIdentity()
-	// );
 
 	XMStoreFloat4x4(
 		&vsConstBufferData.matView,
@@ -955,11 +949,6 @@ namespace DXInitAux {
 			.SlicePitch = bmp_width * bmp_height * bmp_px_size
 		};
 		
-		//@TODO: jakie reset?
-		// commandList->Reset(commandAllocator.Get());
-		// ... ID3D12GraphicsCommandList::Reset() - to dlatego lista
-		// poleceń i obiekt stanu potoku muszą być wcześniej utworzone
-		// ThrowIfFailed(commandAllocator->Reset());
 		ThrowIfFailed(commandList->Reset(commandAllocator.Get(), pipelineState.Get()));
 
 		UINT const MAX_SUBRESOURCES = 1;
@@ -1055,7 +1044,6 @@ namespace DXInitAux {
 		};
 
 		D3D12_CPU_DESCRIPTOR_HANDLE cpu_desc_handle = 
-		// @TODO: is it cbv?
 			cbvHeap->GetCPUDescriptorHandleForHeapStart();
 		
 		cpu_desc_handle.ptr +=
@@ -1067,12 +1055,7 @@ namespace DXInitAux {
 			texture_resource.Get(), &srv_desc, cpu_desc_handle 
 		);
 
-		//@TODO: jakie wait?
-
-		// ... WaitForGPU() - nie można usuwać texture_upload_buffer
-		// zanim nie skopiuje się jego zawartości
 		WaitForPreviousFrame(hwnd);
-	
 	}
 }
 
@@ -1086,7 +1069,6 @@ void PopulateCommandList(HWND hwnd) {
 	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE gpu_desc_handle =
-	// @TODO: this heap?
 		cbvHeap->GetGPUDescriptorHandleForHeapStart();
 	
 	commandList->SetGraphicsRootDescriptorTable(

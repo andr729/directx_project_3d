@@ -4,7 +4,7 @@
 #include <cstdlib>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
-	// try {
+	try {
 		const float movespeed = 0.015;
 		switch (Msg) {
 		case WM_CREATE:
@@ -55,11 +55,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 			SetCursorPos(set_x, set_y);
 			return 0;
 		}
-	// }
-	// catch (...) {
-	// 	PostQuitMessage(0);
-	// 	return 0;
-	// }
+	}
+	catch (...) {
+		PostQuitMessage(0);
+		return 0;
+	}
 
 	return DefWindowProc(hwnd, Msg, wParam, lParam);
 }
@@ -91,7 +91,7 @@ INT WINAPI wWinMain(_In_ [[maybe_unused]] HINSTANCE instance,
 	HWND hwnd = CreateWindowEx(
 		0, // Optional window styles.
 		wcex.lpszClassName, // Window class
-		TEXT("Choinka"), // Window text
+		TEXT("Maze"), // Window text
 		WS_POPUP, // Window style
 
 		// Size and position

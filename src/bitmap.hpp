@@ -13,11 +13,3 @@ extern UINT bmp_width;
 extern UINT bmp_height;
 extern BYTE* bmp_data;
 
-// constexpr size_t bmp_size = bmp_px_size * bmp_width * bmp_height;
-
-// RGBA
-// constexpr std::array<BYTE, bmp_size> bmp_bits = {
-//  	255, 255, 0, 255,		0, 255, 255, 255,
-//  	255, 0, 255, 255,		0, 255, 255, 255 
-// };
-

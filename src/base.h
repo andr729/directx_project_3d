@@ -1,9 +1,10 @@
 #pragma once
 
 #include <cmath>
+#include <d3d12.h>
 
-// @TODO: dx12 float must be used, to not break everything on diffrent arch
-typedef float FLOAT;
+#undef max
+#undef min
 
 struct vertex_t {
 	FLOAT position[3];
@@ -11,6 +12,10 @@ struct vertex_t {
 	FLOAT color[4];
 	FLOAT tex_coord[2];
 };
+
+constexpr size_t VERTEX_SIZE = sizeof(vertex_t) / sizeof(FLOAT);
+
+constexpr double PI = 3.14159265358979323846;
 
 struct Vector2 {
 	float x, y;
@@ -92,5 +97,3 @@ struct Vector2 {
 };
 
 
-// @TODO: float
-constexpr size_t VERTEX_SIZE = sizeof(vertex_t) / sizeof(float);

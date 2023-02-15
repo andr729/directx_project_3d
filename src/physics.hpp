@@ -14,13 +14,6 @@ struct Object {
 
 bool collides(const Object&, const Object&);
 
-// struct CircObj: public Object {
-// 	Vector2 pos;
-// 	float rad;
-// 	CircObj(Vector2 pos, float rad): pos(pos), rad(rad) {}
-// 	Vector2 supportFunction(float angle) const override;
-// };
-
 class ObjectHandler {
 	std::vector<Object*> objects;
 public:
