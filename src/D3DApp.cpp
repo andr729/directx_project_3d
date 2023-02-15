@@ -77,7 +77,7 @@ namespace {
 	vs_const_buffer_t vsConstBufferData = {
 		.colMaterial = {0.4, 1, 0.4, 1},
 		.colLight = {1, 1, 1, 1},
-		.dirLight = {0.0, 0.0, 1.0, 1},
+		.dirLight = {0.0, 1.0, 1.0, 1},
 	};
 	UINT8* vsConstBufferPointer;
 

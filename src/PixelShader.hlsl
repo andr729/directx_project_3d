@@ -12,6 +12,6 @@ float4 main(ps_input_t input) : SV_TARGET {
 	float4 fog_color = float4(0.0f, 0.8f, 0.8f, 1.0f);
 
 	return input.color
-	       * texture_ps.Sample(sampler_ps, input.tex)
-		   * fogy + (1 - fogy) * fog_color;
+	       * texture_ps.Sample(sampler_ps, input.tex);
+		//    * fogy + (1 - fogy) * fog_color;
 }
