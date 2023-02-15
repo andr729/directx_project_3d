@@ -9,5 +9,5 @@ SamplerState sampler_ps;
 
 float4 main(ps_input_t input) : SV_TARGET {	
 	return input.color
-             * texture_ps.Sample(sampler_ps, input.tex);
+	       * texture_ps.Sample(sampler_ps, input.tex);
 }
