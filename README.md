@@ -1,5 +1,5 @@
-# directx_project_3d
+# Controls:
 
-Controls:
 WASD - movement
+
 Space/Shift - ascend/descend
