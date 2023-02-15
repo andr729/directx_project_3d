@@ -123,7 +123,7 @@ namespace {
 
 namespace player_state {
 	Vector2 position = {0, 0};
-	float height = 0;
+	float height = 0.1;
 	float rotY = 0;
 	float rotUpDown = 0;
 
@@ -148,7 +148,7 @@ namespace player_state {
 				sin(rotY) * dx + cos(rotY) * dy
 			};
 		
-		HexObj player = {{new_position}, 0.01};
+		HexObj player = {{new_position}, 0.1};
 		if (obj_handler.collidesWith(player)) {
 			return;
 		}
@@ -320,7 +320,7 @@ void calcNewMatrix() {
 	wvp_matrix = XMMatrixMultiply(
 		wvp_matrix, 
 		XMMatrixPerspectiveFovLH(
-			45.0f, viewport.Width / viewport.Height, 0.1f, 100.0f
+			45.0f, viewport.Width / viewport.Height, 0.03f, 100.0f
 		)
 	);
 	wvp_matrix = XMMatrixTranspose(wvp_matrix);
