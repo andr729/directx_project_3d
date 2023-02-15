@@ -5,7 +5,7 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 	try {
-		const float movespeed = 0.015;
+		constexpr float movespeed = 0.015;
 		switch (Msg) {
 		case WM_CREATE:
 			SetTimer(hwnd, 200, 10, nullptr);

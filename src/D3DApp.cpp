@@ -43,7 +43,7 @@ inline void ThrowIfFailed(HRESULT hr) {
 }
 
 namespace {
-	const INT FrameCount = 2;
+	constexpr INT FrameCount = 2;
 	using Microsoft::WRL::ComPtr;
 	ComPtr<IDXGISwapChain3> swapChain;
 	ComPtr<IDXGIFactory7> factory;
@@ -165,10 +165,10 @@ namespace player_state {
 };
 
 void initTriangleAndInstanceData() {
-	const float length = 2;
-	const float width = .2;
-	const float height = .5;
-	const int side_edges = 30;
+	constexpr float length = 2;
+	constexpr float width = .2;
+	constexpr float height = .5;
+	constexpr int side_edges = 30;
 
 	auto maze = getMaze(length, width, height, side_edges, 1);
 
@@ -405,10 +405,6 @@ namespace DXInitAux {
 			.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
 			.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
 		};
-		// D3D12_CLEAR_VALUE clearValue = {
-		// 	.Format = DXGI_FORMAT_D32_FLOAT,
-		// 	.DepthStencil = { .Depth = 1.0f, .Stencil = 0 }
-		// };
 		D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {
 			.Format = DXGI_FORMAT_D32_FLOAT,
 			.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D,
