@@ -11,7 +11,7 @@ HRESULT LoadBitmapFromFile(PCWSTR uri, UINT &width, UINT &height, BYTE **ppBits)
 constexpr UINT bmp_px_size = 4;
 extern UINT bmp_width;
 extern UINT bmp_height;
-extern BYTE* grass;
+extern BYTE* bmp_data;
 
 // constexpr size_t bmp_size = bmp_px_size * bmp_width * bmp_height;
 

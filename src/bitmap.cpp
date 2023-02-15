@@ -5,7 +5,7 @@
 IWICImagingFactory* img_ns_img_factory = nullptr;
 UINT bmp_width;
 UINT bmp_height;
-BYTE* grass;
+BYTE* bmp_data;
 
 HRESULT LoadBitmapFromFile(
     PCWSTR uri, UINT &width, UINT &height, BYTE **ppBits

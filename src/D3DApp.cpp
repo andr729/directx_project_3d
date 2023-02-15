@@ -303,7 +303,7 @@ void calcNewMatrix() {
 }
 
 void initBitmap() {
-	ThrowIfFailed(LoadBitmapFromFile(L"assets/grass.png", bmp_width, bmp_height, &grass));
+	ThrowIfFailed(LoadBitmapFromFile(L"assets/brick_grass.png", bmp_width, bmp_height, &bmp_data));
 }
 
 void WaitForPreviousFrame(HWND hwnd);
@@ -906,7 +906,7 @@ namespace DXInitAux {
 		
 		// - skopiowanie danych tekstury do pom. bufora
 		D3D12_SUBRESOURCE_DATA texture_data = {
-			.pData = grass,
+			.pData = bmp_data,
 			.RowPitch = bmp_width * bmp_px_size,
 			.SlicePitch = bmp_width * bmp_height * bmp_px_size
 		};
