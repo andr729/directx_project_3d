@@ -296,6 +296,10 @@ void calcNewMatrix() {
 	copyConstBufferToGpu();
 }
 
+void initBitmap() {
+	ThrowIfFailed(LoadBitmapFromFile(L"assets/grass.png", bmp_width, bmp_height, &grass));
+}
+
 void WaitForPreviousFrame(HWND hwnd);
 
 namespace DXInitAux {
@@ -327,7 +331,7 @@ namespace DXInitAux {
 			CLSID_WICImagingFactory,
 			nullptr,
 			CLSCTX_INPROC_SERVER,
-			IID_PPV_ARGS(&img_factory)
+			IID_PPV_ARGS(&img_ns_img_factory)
 		));
 	}
 
@@ -896,7 +900,7 @@ namespace DXInitAux {
 		
 		// - skopiowanie danych tekstury do pom. bufora
 		D3D12_SUBRESOURCE_DATA texture_data = {
-			.pData = bmp_bits.data(),
+			.pData = grass,
 			.RowPitch = bmp_width * bmp_px_size,
 			.SlicePitch = bmp_width * bmp_height * bmp_px_size
 		};
@@ -1188,9 +1192,9 @@ void InitDirect3D(HWND hwnd) {
 	// complete before continuing.
 	WaitForPreviousFrame(hwnd);
 
-	DXInitAux::initTextureView(hwnd);
-
 	DXInitAux::initWicFactory();
+	initBitmap();
+	DXInitAux::initTextureView(hwnd);
 }
 
 void OnUpdate(HWND hwnd) {

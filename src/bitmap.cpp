@@ -2,6 +2,11 @@
 #include "global_state.hpp"
 #include <wincodec.h>
 
+IWICImagingFactory* img_ns_img_factory = nullptr;
+UINT bmp_width;
+UINT bmp_height;
+BYTE* grass;
+
 HRESULT LoadBitmapFromFile(
     PCWSTR uri, UINT &width, UINT &height, BYTE **ppBits
 ) {
@@ -10,7 +15,7 @@ HRESULT LoadBitmapFromFile(
     IWICBitmapFrameDecode *pSource = nullptr;
     IWICFormatConverter *pConverter = nullptr;
     
-    hr = img_factory->CreateDecoderFromFilename(
+    hr = img_ns_img_factory->CreateDecoderFromFilename(
         uri, nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad,
         &pDecoder
     );
@@ -20,7 +25,7 @@ HRESULT LoadBitmapFromFile(
     }
 
     if (SUCCEEDED(hr)) {
-        hr = img_factory->CreateFormatConverter(&pConverter);
+        hr = img_ns_img_factory->CreateFormatConverter(&pConverter);
     }
 
 
