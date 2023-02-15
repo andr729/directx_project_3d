@@ -168,8 +168,8 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 		res.floor[i * 3 + 1] = floor[i].t1[1];
 		res.floor[i * 3 + 2] = floor[i].t1[2];
 	}
-	for (int z = 0; z < side_edges * 3; z++) {
-		for (int x = 0; x < side_edges * 3; x++) {
+	for (int z = -side_edges; z < side_edges * 4; z++) {
+		for (int x = -side_edges; x < side_edges * 4; x++) {
 			res.transformations_floor.push_back({{x * length, z * length}});
 		}
 	}
