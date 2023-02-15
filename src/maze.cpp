@@ -118,13 +118,13 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[5], cuboid_verticies[1], cuboid_verticies[0]}, cuboid_verticies[0], {texturevec, 0, 0}, {0, texturevec, 0});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// bottom
-	temp = makeConvexShape({cuboid_verticies[0], cuboid_verticies[1], cuboid_verticies[3], cuboid_verticies[2]}, cuboid_verticies[3], {texturevec, 0, 0}, {0, 0, texturevec});
+	temp = makeConvexShape({cuboid_verticies[0], cuboid_verticies[1], cuboid_verticies[3], cuboid_verticies[2]}, cuboid_verticies[3], {-texturevec, 0, 0}, {0, 0, -texturevec});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// left
-	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[0], cuboid_verticies[2], cuboid_verticies[6]}, cuboid_verticies[2], {0, 0, texturevec}, {0, texturevec, 0});
+	temp = makeConvexShape({cuboid_verticies[4], cuboid_verticies[0], cuboid_verticies[2], cuboid_verticies[6]}, cuboid_verticies[0], {0, 0, texturevec}, {0, texturevec, 0});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	// back
-	temp = makeConvexShape({cuboid_verticies[2], cuboid_verticies[3], cuboid_verticies[7], cuboid_verticies[6]}, cuboid_verticies[3], {texturevec, 0, 0}, {0, texturevec});
+	temp = makeConvexShape({cuboid_verticies[2], cuboid_verticies[3], cuboid_verticies[7], cuboid_verticies[6]}, cuboid_verticies[2], {texturevec, 0, 0}, {0, texturevec});
 	cuboid.insert(cuboid.end(), temp.begin(), temp.end());
 	for (int i = 0; i < cuboid.size(); i++) {
 		res.cuboid[i * 3] = cuboid[i].t1[0];
@@ -149,8 +149,8 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 	// bottom
 	temp = makeConvexShape({hexprism_verticies[11], hexprism_verticies[10], hexprism_verticies[9],hexprism_verticies[8],hexprism_verticies[7],hexprism_verticies[6]}, {hexprism_verticies[6].x - width, hexprism_verticies[6].y, hexprism_verticies[6].z - 2 * width}, {texturevec, 0, 0}, {0, 0, texturevec});
 	hexprism.insert(hexprism.end(), temp.begin(), temp.end());
-	float z_impact[6] = {0.5, -1, 0.5, -0.5, 1, -0.5};
-	float x_impact[6] = {-sqrt(3) / 2, 0, sqrt(3) / 2, sqrt(3) / 2, 0, -sqrt(3) / 2};
+	float z_impact[6] = {0.5, 1, 0.5, -0.5, -1, -0.5};
+	float x_impact[6] = {sqrt(3) / 2, 0, -sqrt(3) / 2, -sqrt(3) / 2, 0, sqrt(3) / 2};
 	for (int i = 0; i < 6; i++) {
 		temp = makeConvexShape({hexprism_verticies[i], hexprism_verticies[i + 6], hexprism_verticies[((i + 1) % 6) + 6], hexprism_verticies[(i + 1) % 6]}, hexprism_verticies[(i + 1) % 6], {texturevec * x_impact[i], 0, texturevec * z_impact[i]}, {0, texturevec, 0});
 		hexprism.insert(hexprism.end(), temp.begin(), temp.end());

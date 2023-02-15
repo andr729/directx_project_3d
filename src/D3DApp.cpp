@@ -176,17 +176,30 @@ void initTriangleAndInstanceData() {
 	double grass_d = 512;
 	double full_d = brick_d + grass_d;
 
-	// for (auto& floor_vertex: maze.floor) {
-	// 	floor_vertex.tex_coord[0] = (brick_d/full_d) + floor_vertex.tex_coord[0] * (1 - brick_d/full_d);
-	// 	floor_vertex.tex_coord[1] = floor_vertex.tex_coord[1] * (grass_d/brick_d);
-	// }
+	for (auto& floor_vertex : maze.floor) {
+		assert(floor_vertex.tex_coord[0] >= 0 && floor_vertex.tex_coord[0] <= 1);
+		assert(floor_vertex.tex_coord[1] >= 0 && floor_vertex.tex_coord[1] <= 1);
+		floor_vertex.tex_coord[0] = (brick_d / full_d) + floor_vertex.tex_coord[0] * (1 - brick_d / full_d);
+		floor_vertex.tex_coord[1] = floor_vertex.tex_coord[1] * (grass_d / brick_d);
+		assert(floor_vertex.tex_coord[0] >= 0 && floor_vertex.tex_coord[0] <= 1);
+		assert(floor_vertex.tex_coord[1] >= 0 && floor_vertex.tex_coord[1] <= 1);
+	}
 
-	// for (auto& maze_vertex: maze.cuboid) {
-	// 	maze_vertex.tex_coord[0] *= brick_d/full_d;
-	// }
-	// for (auto& maze_vertex: maze.hexprism) {
-	// 	maze_vertex.tex_coord[0] *= brick_d/full_d;
-	// }
+	for (auto& maze_vertex : maze.cuboid) {
+		assert(maze_vertex.tex_coord[0] >= 0 && maze_vertex.tex_coord[0] <= 1);
+		assert(maze_vertex.tex_coord[1] >= 0 && maze_vertex.tex_coord[1] <= 1);
+		maze_vertex.tex_coord[0] *= brick_d / full_d;
+		assert(maze_vertex.tex_coord[0] >= 0 && maze_vertex.tex_coord[0] <= 1);
+		assert(maze_vertex.tex_coord[1] >= 0 && maze_vertex.tex_coord[1] <= 1);
+	}
+	for (auto& maze_vertex : maze.hexprism) {
+//		assert(maze_vertex.tex_coord[0] >= 0 && maze_vertex.tex_coord[0] <= 1);
+		assert(maze_vertex.tex_coord[1] >= 0 && maze_vertex.tex_coord[1] <= 1);
+		maze_vertex.tex_coord[0] *= brick_d / full_d;
+//		assert(maze_vertex.tex_coord[0] >= 0 && maze_vertex.tex_coord[0] <= 1);
+		assert(maze_vertex.tex_coord[1] >= 0 && maze_vertex.tex_coord[1] <= 1);
+	}
+
 
 	player_state::position = maze.player_coordinates;
 
