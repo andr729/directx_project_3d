@@ -307,7 +307,7 @@ void calcNewMatrix() {
 	wvp_matrix = XMMatrixMultiply(
 		wvp_matrix, 
 		XMMatrixPerspectiveFovLH(
-			45.0f, viewport.Width / viewport.Height, 0.01f, 100.0f
+			45.0f, viewport.Width / viewport.Height, 0.03f, 100.0f
 		)
 	);
 	wvp_matrix = XMMatrixTranspose(wvp_matrix);
