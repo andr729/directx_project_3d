@@ -186,18 +186,8 @@ void initTriangleAndInstanceData() {
 		floor_vertex.tex_coord[0] = (brick_d / full_d) + floor_vertex.tex_coord[0] * (1 - (brick_d / full_d));
 		floor_vertex.tex_coord[1] = floor_vertex.tex_coord[1] * (grass_d / full_h);;
 		
-		float val = 1 - 1/full_d;
 		float val_s = brick_d / full_d + 1/full_d;
-		// float val_s2 = 1/full_h;
-
-		// if (floor_vertex.tex_coord[0] > val) floor_vertex.tex_coord[0] = val;
-		// if (floor_vertex.tex_coord[1] > val) floor_vertex.tex_coord[1] = val;
-
 		if (floor_vertex.tex_coord[0] < val_s) floor_vertex.tex_coord[0] = val_s;
-		// if (floor_vertex.tex_coord[1] < val_s2) floor_vertex.tex_coord[1] = val_s2;
-		
-		// assert(floor_vertex.tex_coord[0] >= 0 && floor_vertex.tex_coord[0] <= 1);
-		// assert(floor_vertex.tex_coord[1] >= 0 && floor_vertex.tex_coord[1] <= 1);
 	}
 
 	for (auto& maze_vertex : maze.cuboid) {
@@ -205,7 +195,7 @@ void initTriangleAndInstanceData() {
 		assert(maze_vertex.tex_coord[1] >= 0 && maze_vertex.tex_coord[1] <= 1);
 		maze_vertex.tex_coord[0] *= brick_d / full_d;
 
-		float val = 1 - 1/full_d;
+		float val = brick_d / full_d - 1/full_d;
 		if (maze_vertex.tex_coord[0] > val) maze_vertex.tex_coord[0] = val;
 
 		assert(maze_vertex.tex_coord[0] >= 0 && maze_vertex.tex_coord[0] <= 1);
