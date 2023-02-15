@@ -49,11 +49,11 @@ bool collides(const Object& p, const Object& q) {
 	if (p.type() == ObjectType::Rect) {
 		const RectangleObj& pr = dynamic_cast<const RectangleObj&>(p);
 
-		Vector2 rect = (pr.t.translation - qh.t.translation).rot(-pr.t.rotation);
+		Vector2 rect = (pr.t.translation - qh.t.translation).rot(pr.t.rotation);
 		Vector2 circle = {0, 0};
 
-		float rect_w = pr.width * 2;
-		float rect_h = pr.length * 2;
+		float rect_h = pr.width;
+		float rect_w = pr.length;
 		float c_r = qh.width;
 
 		Vector2 circleDistance = {std::abs(circle.x - rect.x), std::abs(circle.y - rect.y)};
