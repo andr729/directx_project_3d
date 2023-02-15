@@ -162,7 +162,7 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 	}
 
 	std::vector<Triangle> floor;
-	floor = makeConvexShape({{0, 0, 0}, {length, 0, 0}, {length, 0, length}, {0, 0, length}}, {0, 0, 0}, {texturevec, 0, 0}, {0, 0, texturevec});
+	floor = makeConvexShape({{0, 0, 0}, {0, 0, length}, {length, 0, length}, {length, 0, 0}}, {0, 0, 0}, {texturevec, 0, 0}, {0, 0, texturevec});
 	for (int i = 0; i < floor.size(); i++) {
 		res.floor[i * 3] = floor[i].t1[0];
 		res.floor[i * 3 + 1] = floor[i].t1[1];
