@@ -24,11 +24,10 @@ vs_output_t main(
   		uint instance_id: SV_InstanceID) {
 	vs_output_t result;
 	
-	float4 NW = float4(norm, 0.0f); //mul(float4(norm, 0.0f), matWorldView);
-	float4 LW = dirLight; //mul(dirLight, matView);
+	float4 NW = float4(norm, 0.0f);
+	float4 LW = dirLight;
 	
 	result.position = mul(mul(float4(pos, 1.0f), mat_w), matWorldViewProj);
-	// result.position = mul(float4(pos, 1.0f), matWorldViewProj);
 	result.color = mul(
  			max(-dot(normalize(LW), normalize(NW)), 0.4f), 
  			colLight * col);
