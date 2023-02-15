@@ -297,10 +297,10 @@ void copyTriangleDataToVertexBuffer() {
 
 void calcNewMatrix() {
 
-	XMStoreFloat4x4(
-		&vsConstBufferData.matWorldView,
-		XMMatrixIdentity()
-	);
+	// XMStoreFloat4x4(
+	// 	&vsConstBufferData.matWorldView,
+	// 	XMMatrixIdentity()
+	// );
 
 	XMStoreFloat4x4(
 		&vsConstBufferData.matView,
@@ -324,6 +324,11 @@ void calcNewMatrix() {
 	wvp_matrix = XMMatrixMultiply(
 		wvp_matrix,
 		XMMatrixRotationX(player_state::rotUpDown)
+	);
+
+	XMStoreFloat4x4(
+		&vsConstBufferData.matWorldView, 	// zmienna typu vs_const_buffer_t z pkt. 2d
+		wvp_matrix
 	);
 
 	wvp_matrix = XMMatrixMultiply(
@@ -1125,7 +1130,7 @@ void PopulateCommandList(HWND hwnd) {
 		&cpudesc
 	);
 
-	const float clearColor[] = { 0.0f, 0.8f, 0.8f, 1.0f };
+	const float clearColor[] = { 0.2f, 0.5f, 0.5f, 1.0f };
 	commandList->ClearRenderTargetView(rtvHandleHeapStart, clearColor, 0, nullptr);
 	commandList->ClearDepthStencilView(
 		cpudesc,

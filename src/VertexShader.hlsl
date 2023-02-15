@@ -12,6 +12,7 @@ struct vs_output_t {
 	float4 position : SV_POSITION;
 	float4 color : COLOR;
 	float2 tex : TEXCOORD;
+	float dist : DIST;
 };
 
 vs_output_t main(
@@ -23,8 +24,8 @@ vs_output_t main(
   		uint instance_id: SV_InstanceID) {
 	vs_output_t result;
 	
-	float4 NW = mul(float4(norm, 0.0f), matWorldView);
-	float4 LW = mul(dirLight, matView);
+	float4 NW = float4(norm, 0.0f); //mul(float4(norm, 0.0f), matWorldView);
+	float4 LW = dirLight; //mul(dirLight, matView);
 	
 	result.position = mul(mul(float4(pos, 1.0f), mat_w), matWorldViewProj);
 	// result.position = mul(float4(pos, 1.0f), matWorldViewProj);
@@ -33,6 +34,8 @@ vs_output_t main(
  			colLight * col);
 
 	result.tex = tex;
+
+	result.dist = length( result.position.xyz  );
 
 	return result;
 }
