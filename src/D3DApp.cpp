@@ -168,6 +168,8 @@ void initTriangleAndInstanceData() {
 
 	auto maze = getMaze(length, width, height, side_edges, 1);
 
+	player_state::position = maze.player_coordinates;
+
 	for(int i = 0; i < CUBOID_VERTEX_COUNT; i++)
 		triangle_data[i + CUBOID_START_POSITION] = maze.cuboid[i];
 

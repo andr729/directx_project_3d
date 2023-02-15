@@ -150,7 +150,7 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 	temp = makeConvexShape({hexprism_verticies[11], hexprism_verticies[10], hexprism_verticies[9],hexprism_verticies[8],hexprism_verticies[7],hexprism_verticies[6]}, {hexprism_verticies[6].x - width, hexprism_verticies[6].y, hexprism_verticies[6].z - 2 * width}, {texturevec, 0, 0}, {0, 0, texturevec});
 	hexprism.insert(hexprism.end(), temp.begin(), temp.end());
 	float z_impact[6] = {0.5, -1, 0.5, -0.5, 1, -0.5};
-	float x_impact[6] = {-sqrt(3)/2, 0, sqrt(3) / 2, sqrt(3) / 2, 0, -sqrt(3) / 2};
+	float x_impact[6] = {-sqrt(3) / 2, 0, sqrt(3) / 2, sqrt(3) / 2, 0, -sqrt(3) / 2};
 	for (int i = 0; i < 6; i++) {
 		temp = makeConvexShape({hexprism_verticies[i], hexprism_verticies[i + 6], hexprism_verticies[((i + 1) % 6) + 6], hexprism_verticies[(i + 1) % 6]}, hexprism_verticies[(i + 1) % 6], {texturevec * x_impact[i], 0, texturevec * z_impact[i]}, {0, texturevec, 0});
 		hexprism.insert(hexprism.end(), temp.begin(), temp.end());
@@ -160,6 +160,20 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 		res.hexprism[i * 3 + 1] = hexprism[i].t1[1];
 		res.hexprism[i * 3 + 2] = hexprism[i].t1[2];
 	}
+
+	std::vector<Triangle> floor;
+	floor = makeConvexShape({{0, 0, 0}, {length, 0, 0}, {length, 0, length}, {0, 0, length}}, {0, 0, 0}, {texturevec, 0, 0}, {0, 0, texturevec});
+	for (int i = 0; i < floor.size(); i++) {
+		res.floor[i * 3] = floor[i].t1[0];
+		res.floor[i * 3 + 1] = floor[i].t1[1];
+		res.floor[i * 3 + 2] = floor[i].t1[2];
+	}
+	for (int z = 0; z < side_edges * 3; z++) {
+		for (int x = 0; x < side_edges * 3; x++) {
+			res.transformations_floor.push_back({{x * length, z * length}});
+		}
+	}
+
 	std::vector<edge> final_edges;
 	std::vector<edge> temp_edges;
 
@@ -199,6 +213,8 @@ Maze getMaze(float length, float width, float height, int side_edges, int seed) 
 			}
 		}
 	}
+
+	res.player_coordinates = (coordsToHexOffset(side_edges, side_edges - 1, length, width) + coordsToHexOffset(side_edges, side_edges, length, width) + coordsToHexOffset(side_edges + 1, side_edges - 1, length, width)) / 3;
 
 	std::mt19937 random_gen;
 	random_gen.seed(seed);

@@ -16,9 +16,9 @@ struct RectangleObj: public Object {
 };
 
 struct HexObj: public Object {
-	HexPrismTransformation t;
+	TranslationTransformation t;
 	float width;
-	HexObj(HexPrismTransformation t, float width):
+	HexObj(TranslationTransformation t, float width):
 		t(t), width(width) {}
 
 	Vector2 supportFunction(float angle) const override;
