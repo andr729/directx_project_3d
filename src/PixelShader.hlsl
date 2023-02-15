@@ -9,7 +9,7 @@ Texture2D texture_ps;
 SamplerState sampler_ps;
 
 float4 main(ps_input_t input) : SV_TARGET {	
-	float fogy = clamp(1 - input.dist, 0, 1);
+	float fogy = clamp(1 - input.dist/10, 0, 1);
 	float4 fog_color = float4(0.2f, 0.5f, 0.5f, 1.0f);
 
 	return input.color
