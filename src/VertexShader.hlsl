@@ -24,7 +24,7 @@ vs_output_t main(
   		uint instance_id: SV_InstanceID) {
 	vs_output_t result;
 	
-	float4 NW = float4(norm, 0.0f);
+	float4 NW = mul(float4(norm, 0.0f), mat_w);
 	float4 LW = dirLight;
 	
 	result.position = mul(mul(float4(pos, 1.0f), mat_w), matWorldViewProj);
